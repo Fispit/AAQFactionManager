@@ -10,26 +10,26 @@ class Faction:
     
 
     
-    def __init__(self,name="nameless",bases=1,slaves=500):
+    def __init__(self,namae="nameless",bases=1,slaves=500):
         self.basecount=bases
         self.slavepop=slaves
-        self.memberlist=[]
-        self.attritiongrowth=0.00
+        self.memberlist={}
+        self.attritiongrowth=0.00  # fraction of growth(+) and attrition(-) 
         self.mooknumbers={}
         self.acbnumber=1
         self.baseprod=ConstructionBay()
         self.mookmags={}
         self.baseslavemag=5000
-        self.factionname=name
-        self.slave2mookratio=1/2
+        self.factionname=namae
+        self.slave2mookratio=1/2  #2 slave mags for 1 mook mag
         for key in self.baseprod.production.keys():
 
             self.mooknumbers[key]=self.mooknumbers.get(key,self.baseprod.production[key]*self.baseprod.prodmultiplier*self.acbnumber)
         
-        
     
+    #Might need to alter member adding and removing in the future
     def addmember(self, bote: Shipgirl):#Accepts a Shipgirl type object
-        self.memberlist.append(bote)
+        self.memberlist[bote.name]=self.memberlist.get(bote.name,bote)
 
     def rmvmember(self, bote:Shipgirl):
         self.memberlist.pop(bote.name)
@@ -140,6 +140,11 @@ class Faction:
         for key in self.baseprod.production.keys():
              self.addmookmags(numlist,key,self.slave2mookratio)   
     
+    def slavegrowth(self):
+        self.slavepop*=(1+self.attritiongrowth)
+        if self.slavepop<0:
+            self.slavepop=0
+            
 
 
 
