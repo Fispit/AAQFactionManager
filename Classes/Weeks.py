@@ -8,6 +8,7 @@ from Classes.Shipgirl import Shipgirl
 from Classes.Faction import Faction
 from Classes.ConstructionBay import ConstructionBay
 
+
 class AAQWeek:
     
     def __init__(self,week=1,factions={}):

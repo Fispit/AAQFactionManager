@@ -8,3 +8,5 @@ Created on Tue Feb 16 18:34:02 2021
 from Classes.Shipgirl import Shipgirl
 from Classes.Faction import Faction
 from Classes.ConstructionBay import ConstructionBay
+from Classes.Weeks import AAQWeek
+import pickle as pck
