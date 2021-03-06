@@ -18,7 +18,8 @@ class Faction:
         self.mooknumbers={}
         self.acbnumber=1
         self.baseprod=ConstructionBay()
-        self.mookmags={}
+        self.mookmags=[]
+        self.slavemags=[]
         self.baseslavemag=5000
         self.factionname=namae
         self.slave2mookratio=1/2  #2 slave mags for 1 mook mag

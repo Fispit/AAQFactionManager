@@ -14,6 +14,7 @@ class AAQWeek:
     def __init__(self,week=1,factions={}):
         self.weeknum=week
         self.factionlist=factions
+
     
     def addfaction(self, fact:Faction):#accepts a faction type object
         self.factionlist[fact.factionname]=self.factionlist.get(fact.factionname,fact)
