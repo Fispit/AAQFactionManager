@@ -1,0 +1,32 @@
+Note for advancing weeks and storing
+weeklist={}
+
+initialweek=AAQWeek()
+
+faction1=Faction("Dumbfucks",3, 8000)
+
+weeklist.addfaction(faction1)
+Traceback (most recent call last):
+
+  File "<ipython-input-15-e22ddbb29b2e>", line 1, in <module>
+    weeklist.addfaction(faction1)
+
+AttributeError: 'dict' object has no attribute 'addfaction'
+
+
+initialweek.addfaction(faction1)
+
+faction2=Faction("Retards",3, 50000)
+
+initialweek.addfaction(faction2)
+
+weeklist.get(initialweek.weeknum,initialweek)
+Out[19]: <Classes.Weeks.AAQWeek at 0x2337aec4730>
+
+weeklist[initialweek.weeknum]=weeklist.get(initialweek.weeknum,initialweek)
+
+currentweek=weeklist[1]
+
+currentweek.nextweek()
+
+weeklist[currentweek.weeknum]=weeklist.get(currentweek.weeknum,currentweek)

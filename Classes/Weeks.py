@@ -20,7 +20,7 @@ class AAQWeek:
         self.factionlist[fact.factionname]=self.factionlist.get(fact.factionname,fact)
 
     def rmvfaction(self, fact:Faction):
-        self.memberlist.pop(fact.factionname)
+        self.factionlist.pop(fact.factionname)
         
     def transfermember(self, donor,receiver,botename):  #inputs are all strings
         self.factionlist[receiver].addmember(self.factionlist[donor].memberlist[botename])
