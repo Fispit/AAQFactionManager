@@ -11,8 +11,10 @@ from Classes.ConstructionBay import ConstructionBay
 
 class AAQWeek:
     
-    def __init__(self,week=1,factions={}):
+    def __init__(self,week=1,factions=None):
         self.weeknum=week
+        if factions ==None:
+            factions={}
         self.factionlist=factions
 
     
