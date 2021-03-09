@@ -15,20 +15,48 @@ import PySimpleGUI as sg
 sg.theme("DarkAmber")
 
 
+
+weeklist={}
+weeklist["Currentweek"]=weeklist.get("Currentweek",AAQWeek())
+#Add a load file option as a default and this in case there is nothing to load.
+weeklist["Currentweek"].addfaction(Faction("Dumbass"))
+weeklist["Currentweek"].addfaction(Faction("assdumb"))
+
+aval_types=["DD","CL","CA","CVL","BB","CV","Installation","Other"] #same as the shipgirl class
+factionlist=[]
+
+for key in     weeklist["Currentweek"].factionlist.keys():
+    factionlist.append(key)
+
 firstcolumn=[
     [
      sg.Text("Faction Manager")
      ],
     [
-     sg.Text("Drop Down Faction List"),
-     sg.Text("Add Faction/Remove Faction"),
+    # sg.Text("Drop Down Faction List"),
+
+     sg.Combo([],size=(25,5),key="-factionname-"),
+     sg.Button("Add Faction",key="-addfaction-"),sg.Button("Remove Faction",key="-rmvfaction-",enable_events=True)
      ],
     
     [
-     sg.Text("Memberlist goes here")
+     sg.Text("Memberlist")
      ],
     [
-     sg.Text("Add Bote"),sg.Text("Remove Bote"),sg.Text("Transfer Bote")
+     sg.Text("Installations")],
+    [
+     sg.Listbox([],key="-mem_inst-",size=(25,5))
+     ],
+    [
+     sg.Text("CV")
+     ],
+    [
+     sg.Listbox([],key="-mem_cv-",size=(25,5))
+     ],
+    [
+     sg.Text("BB")],
+    [
+     sg.Button("Add Bote",key="-addbote-"),sg.Button("Remove Bote",key="-rmvbote-"),sg.Button("Transfer Bote",key="-rmvbote-")
      ]
     ]
 
@@ -58,11 +86,46 @@ secondcolumn=[
     [sg.Text("Production per ACB")]
     ]
 
+thirdcolumn=[
+    [
+     sg.Text("Week #X")
+     ],
+    [
+     sg.Text("Resources")
+     ],
+    [
+     sg.Text("Resources display")
+     ],
+
+    [
+     sg.Text("Slave Population:Number"),
+     sg.Text("Numbers")
+     ],
+    [
+     sg.Text("Slave Mags:"),
+     sg.Text("Mags")
+     ],
+    [
+     sg.Text("Slave to Mook Conversion")
+     ],
+     [
+      sg.Text("Slave to Mooks Conversion")
+      ],
+     [
+      sg.Text("Conversion Efficiency")
+      ],
+     [
+      sg.Button("Convert Mags")
+      
+      ]
+
+    ]
 
 
 
 
-layout=[[sg.Column(firstcolumn),sg.VSeperator(),sg.Column(secondcolumn)]]
+
+layout=[[sg.Column(firstcolumn),sg.VSeperator(),sg.Column(secondcolumn),sg.VSeperator(),sg.Column(thirdcolumn)]]
 window=sg.Window("Demo", layout)
 
 while True:
