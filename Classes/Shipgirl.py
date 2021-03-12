@@ -8,7 +8,7 @@ Created on Tue Feb 16 16:42:51 2021
 class Shipgirl:
 
     
-    aval_types=["DD","CL","CA","CVL","BB","CV","Installation","Other"]
+    aval_types=["SS","DD","CL","CA","CVL","BB","CV","Installation","Other"]
 
     def __init__(self,name,shiptype):
         self.name=name
