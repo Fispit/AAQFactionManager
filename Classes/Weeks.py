@@ -50,14 +50,6 @@ class AAQWeek:
     def transferallslaves(self,donor,receiver):
         self.factionlist[receiver].addslaves(self.factionlist[donor].slavepop)
         self.factionlist[donor].rmvslaves(self.factionlist[donor].slavepop)
-        
-    
-    
-    
-    
-    
-    
-    
     
     def nextweek(self):
         #save the current week before anything else.
@@ -68,6 +60,7 @@ class AAQWeek:
         for key in self.factionlist:
             self.factionlist[key].addweekmooks()
             self.factionlist[key].slavegrowth()
+            self.factionlist[key].addweeklyresources()
             
     
         

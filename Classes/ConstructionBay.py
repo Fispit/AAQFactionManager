@@ -16,11 +16,15 @@ class ConstructionBay:
         self.production[shiptype]=self.production.get(shiptype,self.magnumbers[shiptype]/10)
     def addmagtype(self,shiptype:str,prodamount:int):#Only use to add a new type with the typical mag number
         self.magnumbers.get(shiptype,prodamount)
+    def remmagtype(self,shiptype:str):
+        self.magnumbers.pop(shiptype)
     def removetype(self,shiptype:str): 
-        self.production.pop(shiptype)   
-            
+        self.production.pop(shiptype)           
     def gettypes(self):
         return self.production.keys()
+    def getmagtypes(self):
+        return self.magnumbers.keys()
     def changeprod(self, thekey:str,newnumber:int):
         self.production[thekey]=newnumber
+    
         

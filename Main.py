@@ -27,8 +27,11 @@ def addfactionwindow():
             break
             
         elif event=="Add" and values["-fname-"] != None:
-            window.close()
-            return Faction(values["-fname-"],values["-basenum-"],values["-slavenum-"]) 
+            if (values["-basenum-"].isdecimal or values["-basenum-"]==None) and (values["-slavenum-"].isdecimal or values["-slavenum-"]==None): 
+                window.close()
+                return Faction(values["-fname-"],values["-basenum-"],values["-slavenum-"]) 
+            else:
+                sg.Popup("Please put number values or nothing for base numbers or slave numbers.")
     window.close()         
 
 def removefactionwindow(namelist):
@@ -57,21 +60,21 @@ for key in weeklist["Currentweek"].factionlist.keys():
 
 firstcolumn=[
     [     sg.Text("Faction Manager")     ],
-    [     sg.Combo(factionlist,size=(25,5),key="-factionname-"),sg.Button("View",key="-updateall-"),sg.Button("Add Faction",key="-addfaction-"),sg.Button("Remove Faction",key="-rmvfaction-",enable_events=True)],
+    [     sg.Combo(factionlist,size=(25,5),key="-factionname-",enable_events=True),sg.Button("View",key="-updateall-"),sg.Button("Add Faction",key="-addfaction-"),sg.Button("Remove Faction",key="-rmvfaction-",enable_events=True)],
     [     sg.Text("Memberlist")     ],
-    [     sg.Text("Faction Shipgirls")],
+    [     sg.Text("Faction Shipgirls"), sg.Text("Total girls:",key=("-botecount-"))],
     [     sg.Listbox([],key="-botelist-",size=(60,15))     ],
     [     sg.Button("Add Bote",key="-addbote-"),sg.Button("Remove Bote",key="-rmvbote-"),sg.Button("Transfer Bote",key="-transfbote-")     ]
     ]
 
 secondcolumn=[
     [     sg.Text("Mook Mags")     ],
-    [     sg.Text("Mook Mag Numbers")     ],
+    [     sg.Text("Mook Mag Numbers", key=("-mookmagnum-"))     ],
     [     sg.Text("Mooks Raw")     ],
-    [     sg.Text("Mook Raw Numbers")     ],
+    [     sg.Text("Mook Raw Numbers", key=("-mookrawnum-"))     ],
     [     sg.Text("Production")     ],
-    [     sg.Text("Production Mags"),     sg.Text("Production Raw")     ],
-    [     sg.Text("ACB Numbers")     ],
+    [     sg.Text("Production Mags",key=("-prodmags-")),     sg.Text("Production Raw",key=("-prodraw-"))     ],
+    [     sg.Text("ACB Numbers: "), sg.Text("",key=("-acbnums-"))     ],
     [sg.Text("Production per ACB")]
     ]
 
@@ -89,7 +92,9 @@ thirdcolumn=[
 layout=[[sg.Column(firstcolumn),sg.VSeperator(),sg.Column(secondcolumn),sg.VSeperator(),sg.Column(thirdcolumn)]]
 window=sg.Window("AAQ - Faction Manager", layout)
 while True:
+    print("update attempt")
     event,values=window.read()#add a check with a while loop around here to have a constantly updating ui based on faction.  Similar to the updateall call
+    print(event)
     if event== "-addfaction-":
         newfaction=addfactionwindow()
         if newfaction==None:
@@ -114,8 +119,11 @@ while True:
         break  
     elif event=="-updateall-":#this will update all the elements in the UI with the faction's info
         factionname=values["-factionname-"]     
+    elif event=="-factionname-":
+        print("This changes all values when changing to faction: "+values["-factionname-"])
     else:
         print("Error")
+        
 window.close()
 def updateall(factionname,layout):
     print("All window elements are updated here")

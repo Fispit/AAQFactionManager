@@ -23,6 +23,9 @@ class Faction:
         self.baseslavemag=5000
         self.factionname=namae
         self.slave2mookratio=1/2  #2 slave mags for 1 mook mag
+        self.resourcemode=1
+        self.resources={"Steel":0,"Fuel":0,"Ammo":0,"Exotics":0,"Matter":0,"Energy":0}
+        self.resourceincome={"Steel":0,"Fuel":0,"Ammo":0,"Exotics":0,"Matter":0,"Energy":0}
         for key in self.baseprod.production.keys():
 
             self.mooknumbers[key]=self.mooknumbers.get(key,self.baseprod.production[key]*self.baseprod.prodmultiplier*self.acbnumber)
@@ -34,6 +37,7 @@ class Faction:
 
     def rmvmember(self, bote:Shipgirl):
         self.memberlist.pop(bote.name)
+    
             
     def addweekmooks(self):
         for key in self.baseprod.production:
@@ -47,7 +51,8 @@ class Faction:
     
     def rmvspecificmooks(self,key,number):
         self.mooknumbers.get[key]-=number
-    
+    def setmooks(self,key,number):
+        self.mooknumbers.get[key]=number
     def mooknum2mag(self,shiptype:str):
         mags=[]
         basemag=self.baseprod.magnumbers[shiptype]
@@ -64,7 +69,18 @@ class Faction:
                 magquant.append(1)
                 mooks-=num
         magquant.reverse() #puts the mags in order of first value being the lowest mag
-        return [magquant,mooks]
+        magamount=1
+        magstring=shiptype+": "
+        for status in magquant:
+            if status==1:
+                magstring+=str(magamount)+"+"
+            else:
+                magamount+=1
+            if magstring[len(magstring)-1]=="+":
+                magstring[len(magstring)-1]=" "
+                magstring.rstrip()
+                magstring+="\n"
+        return magstring
         
     def slavenum2mag(self):
         mags=[]
@@ -82,11 +98,24 @@ class Faction:
                 magquant.append(1)
                 mooks-=num
         magquant.reverse() #puts the mags in order of first value being the lowest mag
-        return [magquant,mooks]
+        magamount=1
+        magstring="Slave Mags: " 
+        for status in magquant:
+            if status==1:
+                magstring+=str(magamount)+"+"
+            else:
+                magamount+=1
+            if magstring[len(magstring)-1]=="+":
+                magstring[len(magstring)-1]=" "
+                magstring.rstrip()
+                magstring+="\n"
+        return magstring
     def addslaves(self,num):
         self.slavepop+=num
     def rmvslaves(self,num):
         self.slavepop-=num
+    def setslaves(self,num):
+        self.slavepop=num
     
     def addmookmags(self,numlist,shiptype:str,conveff=1): #numlist is a binary array with the mags being starting at position 0 and increasing, up to mag 16
         mags=[]
@@ -145,7 +174,66 @@ class Faction:
         self.slavepop*=(1+self.attritiongrowth)
         if self.slavepop<0:
             self.slavepop=0
+    
+    
+    def changeresmode(self):
+        if self.resourcemode==1:
+            self.resourceincome["Matter"]=self.resourceincome["Steel"]+self.resourceincome["Exotics"]
+            self.resourceincome["Energy"]=self.resourceincome["Fuel"]+self.resourceincome["Ammo"]
+            self.resources["Matter"]=self.resources["Steel"]+self.resources["Exotics"]
+            self.resources["Energy"]=self.resources["Fuel"]+self.resources["Ammo"]
+            resourcemode=2
+        elif resourcemode==2:
+            resourcemode==1 #made so that the user can go back in case of accidentally changing modes.
             
+    def addresources(self,restype,amount):
+        self.resources[restype]+=amount
+    def rmvresources(self,restype,amount):
+        self.resources[restype]-=amount
+    def setresources(self,restype,amount):
+        self.resources[restype]=amount
+
+    def addresincome(self,restype,amount):
+        self.resourceincome[restype]+=amount
+    def rmvresincome(self,restype,amount):
+        self.resourceincome[restype]-=amount
+    def setresincome(self,restype,amount):
+        self.resourceincome[restype]=amount
+        
+    def addweeklyresources(self):
+        for element in self.resourceincome:
+            self.addresources(element,self.resourceincome[element])
+            
+    def getincome(self):
+        
+        incomereturn=""
+
+        for element in self.resourceincome:
+            if self.resourcemode==1:
+                if not(element=="Matter" or element=="Energy"):
+                    incomereturn+=str(element)+": "+str(self.resourceincome[element])+"\n"
+            elif self.resourcemode==2:
+                if element=="Matter" or element=="Energy":
+                    incomereturn+=str(element)+": "+str(self.resourceincome[element])+"\n"
+
+        
+        return incomereturn
+        
+        
+    def getres(self):
+        
+        incomereturn=""
+
+        for element in self.resources:
+            if self.resourcemode==1:
+                if not(element=="Matter" or element=="Energy"):
+                    incomereturn+=str(element)+": "+str(self.resources[element])+"\n"
+            elif self.resourcemode==2:
+                if element=="Matter" or element=="Energy":
+                    incomereturn+=str(element)+": "+str(self.resources[element])+"\n"
+
+        
+        return incomereturn
 
 
 
