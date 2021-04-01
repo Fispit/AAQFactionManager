@@ -1,0 +1,12 @@
+key=("-botecount-")
+key="-botelist-"
+key=("-mookmagnum-")
+key=("-mookrawnum-")
+key=("-prodmags-")
+key=("-prodraw-")
+key=("-acbnums-")
+key="-acbprod-"
+key="-resourcecount-"
+key="-resincome-"
+key="-slavepopraw-"
+key="-slavepopmags-"

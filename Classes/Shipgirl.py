@@ -15,8 +15,8 @@ class Shipgirl:
         self.notes="None"
         self.affiliation="Undefined"
         if shiptype in self.aval_types:
-            self.type=shiptype
+            self.shiptype=shiptype
         else:
-            self.type="Other"
+            self.shiptype="Other"
         
     

@@ -53,6 +53,14 @@ class Faction:
         self.mooknumbers.get[key]-=number
     def setmooks(self,key,number):
         self.mooknumbers.get[key]=number
+        
+    def getmooknums(self):
+        mookreturn=""
+        for shiptype in self.baseprod.production:
+            mookreturn+=shiptype+": "+self.mooknumbers[shiptype]+"\n"
+        return mookreturn
+    
+
     def mooknum2mag(self,shiptype:str):
         mags=[]
         basemag=self.baseprod.magnumbers[shiptype]
@@ -74,12 +82,13 @@ class Faction:
         for status in magquant:
             if status==1:
                 magstring+=str(magamount)+"+"
+                magamount+=1
             else:
                 magamount+=1
-            if magstring[len(magstring)-1]=="+":
-                magstring[len(magstring)-1]=" "
-                magstring.rstrip()
-                magstring+="\n"
+        if magstring[len(magstring)-1]=="+":
+            magstring[len(magstring)-1]=" "
+            magstring.rstrip()
+            magstring+="\n"
         return magstring
         
     def slavenum2mag(self):
@@ -103,12 +112,13 @@ class Faction:
         for status in magquant:
             if status==1:
                 magstring+=str(magamount)+"+"
+                magamount+=1
             else:
                 magamount+=1
-            if magstring[len(magstring)-1]=="+":
-                magstring[len(magstring)-1]=" "
-                magstring.rstrip()
-                magstring+="\n"
+        if magstring[len(magstring)-1]=="+":
+            magstring[len(magstring)-1]=" "
+            magstring.rstrip()
+            magstring+="\n"
         return magstring
     def addslaves(self,num):
         self.slavepop+=num
@@ -116,7 +126,11 @@ class Faction:
         self.slavepop-=num
     def setslaves(self,num):
         self.slavepop=num
-    
+        
+    def getslavenums(self):
+        mookreturn="Slave Population: "+self.slavepop+"\n"
+        return mookreturn
+            
     def addmookmags(self,numlist,shiptype:str,conveff=1): #numlist is a binary array with the mags being starting at position 0 and increasing, up to mag 16
         mags=[]
         basemag=self.baseprod.magnumbers[shiptype]
