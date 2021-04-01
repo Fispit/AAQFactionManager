@@ -58,6 +58,8 @@ weeklist["Currentweek"] = weeklist.get("Currentweek", AAQWeek())
 weeklist["Currentweek"].addfaction(Faction("Dumbass"))
 weeklist["Currentweek"].addfaction(Faction("assdumb"))
 invincible=Shipgirl("Invincible","BB")
+kaguya=Shipgirl("Kaguya","DD")
+weeklist["Currentweek"].factionlist["assdumb"].addmember(kaguya)
 weeklist["Currentweek"].factionlist["assdumb"].addmember(invincible)
 aval_types = ["SS", "DD", "CL", "CA", "CVL", "BB", "CV", "Installation", "Other"]  # same as the shipgirl class
 factionlist = []
@@ -69,7 +71,7 @@ firstcolumn = [
     [sg.Combo(factionlist, size=(25, 5), key="-factionname-", enable_events=True), sg.Button("View", key="-updateall-"),
      sg.Button("Add Faction", key="-addfaction-"), sg.Button("Remove Faction", key="-rmvfaction-", enable_events=True)],
     [sg.Text("Memberlist")],
-    [sg.Text("Faction Shipgirls"), sg.Text("Total girls:", key=("-botecount-"))],
+    [sg.Text("Faction Shipgirls"), sg.Text("Total girls:"),sg.Text("Number", key=("-botecount-"))],
     [sg.Listbox([], key="-botelist-", size=(60, 15))],
     [sg.Button("Add Bote", key="-addbote-"), sg.Button("Remove Bote", key="-rmvbote-"),
      sg.Button("Transfer Bote", key="-transfbote-")]
@@ -133,13 +135,21 @@ while True:
         factionname = values["-factionname-"]
     elif event == "-factionname-":
         print("This changes all values when changing to faction: " + values["-factionname-"])
-        #start by updating shipgirl counts
-        key=("-botecount-")
+        #start by updating shipgirl counts and the list of names
+
         botelistupdate=[]
         botelist=weeklist["Currentweek"].factionlist[values["-factionname-"]].memberlist
+        yest=[]
         for girl in botelist:
-            botelistupdate.append(f"{botelist[girl].shiptype}-{botelist[girl].name}")
-        botelistupdate=botelistupdate.sort()
+            yest.append(girl)
+            botelistupdate.append(botelist[girl].shiptype+"-"+botelist[girl].name)
+        botelistupdate.sort()
+        window.Element("-botelist-").Update(values=botelistupdate)
+        numbotes=str(len(botelistupdate))
+        window.Element("-botecount-").Update(value=numbotes)
+        #Shipgirl update is complete
+        
+        
         
     else:
         print("Error")
