@@ -90,10 +90,10 @@ secondcolumn = [
 
 thirdcolumn = [
     [sg.Text("Week #" + str(weeklist["Currentweek"].weeknum))],
-    [sg.Text("Resources:")],
-    [sg.Text("Resources display",key="-resourcecount-")],
-    [sg.Text("Resource Income:")],
-    [sg.Text("Income Display",key="-resincome-")],
+    [sg.Text("Resources:"),sg.Text("              Resource Income:")],
+    [sg.Multiline("Resources display",key="-resourcecount-",size=(16,5)),sg.Multiline("Income Display",key="-resincome-",size=(16,5))],
+    [],
+    [],
     [sg.Text("Slave Population:"), sg.Text("Numbers",key="-slavepopraw-")],
     [sg.Text("Slave Mags:")],
     [sg.Text("Mags",key="-slavepopmags-")],
@@ -163,13 +163,16 @@ while True:
         window.Element("-acbprod-").Update(value=baseprod)
         #End production updates
         #start resource updates
-key="-resourcecount-"
-key="-resincome-"
+        income=weeklist["Currentweek"].factionlist[values["-factionname-"]].getincome()
+        window.Element("-resincome-").Update(value=income)
+        totalres=weeklist["Currentweek"].factionlist[values["-factionname-"]].getres()
+        window.Element("-resourcecount-").Update(value=totalres)
+
         #end resource updates
         #start questionable updates
 
-key="-slavepopraw-"
-key="-slavepopmags-"
+#key="-slavepopraw-"
+#key="-slavepopmags-"
         
         
     else:

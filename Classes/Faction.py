@@ -259,7 +259,7 @@ class Faction:
         
         incomereturn=""
 
-        for element in self.resourceincome:
+        for element in self.resources:
             if self.resourcemode==1:
                 if not(element=="Matter" or element=="Energy"):
                     incomereturn+=str(element)+": "+str(self.resourceincome[element])+"\n"
