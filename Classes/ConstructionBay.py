@@ -6,10 +6,10 @@ Created on Tue Feb 16 17:18:45 2021
 """
 
 class ConstructionBay:
-    magnumbers={"DD":600,"CL":300, "Transport":240,"CVL":100,"CA":40,"CLM":300,"BB":20,"CV":20,"SS":240,"BBM":20,"La":100}
+    magnumbers={"DD":600,"CL":300, "Transport":240,"CVL":100,"CA":40,"CLM":300,"BB":20,"CV":20,"SS":240,"BBM":20,"La":100,"CLT":300}
 
     def __init__(self):
-        self.production={"DD":60,"CL":30, "Transport":24,"CVL":10,"CA":4,"CLM":30,"BB":2,"CV":2,"SS":24,"BBM":2,"La":10}
+        self.production={"DD":60,"CL":30, "Transport":24,"CVL":10,"CA":4,"CLM":30,"BB":2,"CV":2,"SS":24,"BBM":2,"La":10,"CLT":30}
         self.prodmultiplier=1
         
     def addprodtype(self,shiptype:str):#Adds production to ACB from the selected shiptype, gotten from magnumbers
@@ -26,5 +26,12 @@ class ConstructionBay:
         return self.magnumbers.keys()
     def changeprod(self, thekey:str,newnumber:int):
         self.production[thekey]=newnumber
+    def getbaseprod(self):
+        mooknums=""
+        for key in self.production:
+            mooknums+=f"{key}: {self.production[key]}\n"
+        return mooknums
+            
+        
     
         

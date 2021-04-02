@@ -47,47 +47,48 @@ class Faction:
                 self.mooknumbers[key]=self.mooknumbers.get(key,self.baseprod.production[key]*self.baseprod.prodmultiplier*self.acbnumber)
     
     def addspecificmooks(self,key,number):
-        self.mooknumbers.get[key]+=number
+        self.mooknumbers[key]+=number
     
     def rmvspecificmooks(self,key,number):
-        self.mooknumbers.get[key]-=number
+        self.mooknumbers[key]-=number
     def setmooks(self,key,number):
-        self.mooknumbers.get[key]=number
+        self.mooknumbers[key]=number
         
     def getmooknums(self):
         mookreturn=""
         for shiptype in self.baseprod.production:
-            mookreturn+=shiptype+": "+self.mooknumbers[shiptype]+"\n"
+            mookreturn+=str(shiptype)+": "+str(self.mooknumbers[shiptype])+"\n"
         return mookreturn
     
 
-    def mooknum2mag(self,shiptype:str):
-        mags=[]
-        basemag=self.baseprod.magnumbers[shiptype]
-        mags.append(basemag)
-        for x in range(1,16):
-            mags.append(mags[x-1]*2)
-        mags.reverse()
-        mooks=self.mooknumbers[shiptype]
-        magquant=[]
-        for num in mags:
-            if mooks%mags[num]==mooks:
-                magquant.append(0)
-            else:
-                magquant.append(1)
-                mooks-=num
-        magquant.reverse() #puts the mags in order of first value being the lowest mag
-        magamount=1
-        magstring=shiptype+": "
-        for status in magquant:
-            if status==1:
-                magstring+=str(magamount)+"+"
-                magamount+=1
-            else:
-                magamount+=1
-        if magstring[len(magstring)-1]=="+":
-            magstring[len(magstring)-1]=" "
-            magstring.rstrip()
+    def mooknum2mag(self):
+        magstring=""
+        for shiptype in self.baseprod.production:
+            mags=[]
+            basemag=self.baseprod.magnumbers[shiptype]
+            mags.append(basemag)
+            for x in range(1,20):
+                mags.append(mags[x-1]*2)
+            mags.reverse()
+            mooks=self.mooknumbers[shiptype]
+            magquant=[]
+            for num in mags:
+                if mooks%num==mooks:
+                    magquant.append(0)
+                else:
+                    magquant.append(1)
+                    mooks-=num
+
+            magamount=len(mags)
+            magstring+=shiptype+": "
+            for status in magquant:
+                if status==1:
+                    magstring+=str(magamount)+"+"
+                    magamount-=1
+                else:
+                    magamount-=1
+            if magstring[len(magstring)-1]=="+":
+                magstring=magstring[0:len(magstring)-1]
             magstring+="\n"
         return magstring
         
@@ -95,7 +96,7 @@ class Faction:
         mags=[]
         basemag=self.baseslavemag
         mags.append(basemag)
-        for x in range(1,16):
+        for x in range(1,20):
             mags.append(mags[x-1]*2)
         mags.reverse()
         mooks=self.slavepop
@@ -107,19 +108,55 @@ class Faction:
                 magquant.append(1)
                 mooks-=num
         magquant.reverse() #puts the mags in order of first value being the lowest mag
-        magamount=1
+        magamount=len(mags)
         magstring="Slave Mags: " 
         for status in magquant:
             if status==1:
                 magstring+=str(magamount)+"+"
-                magamount+=1
+                magamount-=1
             else:
-                magamount+=1
+                magamount-=1
         if magstring[len(magstring)-1]=="+":
-            magstring[len(magstring)-1]=" "
-            magstring.rstrip()
+            magstring=magstring[0:len(magstring)-1]
             magstring+="\n"
         return magstring
+    
+    def getprodmags(self):
+        magstring=""
+        for shiptype in self.baseprod.production:
+            mags=[]
+            basemag=self.baseprod.magnumbers[shiptype]
+            mags.append(basemag)
+            for x in range(1,20):
+                mags.append(mags[x-1]*2)
+            mags.reverse()
+            mooks=self.baseprod.production[shiptype]*self.acbnumber
+            magquant=[]
+            for num in mags:
+                if mooks%num==mooks:
+                    magquant.append(0)
+                else:
+                    magquant.append(1)
+                    mooks-=num
+
+            magamount=len(mags)
+            magstring+=shiptype+": "
+            for status in magquant:
+                if status==1:
+                    magstring+=str(magamount)+"+"
+                    magamount-=1
+                else:
+                    magamount-=1
+            if magstring[len(magstring)-1]=="+":
+                magstring=magstring[0:len(magstring)-1]
+            magstring+="\n"
+        return magstring
+    
+    def getprodraw(self):
+        mookreturn=""
+        for shiptype in self.baseprod.production:
+            mookreturn+=str(shiptype)+": "+str(self.baseprod.production[shiptype]*self.acbnumber)+"\n"
+        return mookreturn
     def addslaves(self,num):
         self.slavepop+=num
     def rmvslaves(self,num):
@@ -131,11 +168,11 @@ class Faction:
         mookreturn="Slave Population: "+self.slavepop+"\n"
         return mookreturn
             
-    def addmookmags(self,numlist,shiptype:str,conveff=1): #numlist is a binary array with the mags being starting at position 0 and increasing, up to mag 16
+    def addmookmags(self,numlist,shiptype:str,conveff=1): #numlist is a binary array with the mags being starting at position 0 and increasing, up to mag 20
         mags=[]
         basemag=self.baseprod.magnumbers[shiptype]
         mags.append(basemag)
-        for x in range(1,16):
+        for x in range(1,20):
             mags.append(mags[x-1]*2)
         pos=0
         for mag in numlist:
@@ -143,11 +180,11 @@ class Faction:
             self.addspecificmooks(shiptype,rawnum)
             pos+=1
             
-    def addslavemags(self,numlist): #numlist is a binary array with the mags being starting at position 0 and increasing, up to mag 16
+    def addslavemags(self,numlist): #numlist is a binary array with the mags being starting at position 0 and increasing, up to mag 20
         mags=[]
         basemag=self.baseslavemag
         mags.append(basemag)
-        for x in range(1,16):
+        for x in range(1,20):
             mags.append(mags[x-1]*2)
         pos=0
         for mag in numlist:
@@ -159,7 +196,7 @@ class Faction:
         mags=[]
         basemag=self.baseprod.magnumbers[shiptype]
         mags.append(basemag)
-        for x in range(1,16):
+        for x in range(1,20):
             mags.append(mags[x-1]*2)
         pos=0
         for mag in numlist:
@@ -167,11 +204,11 @@ class Faction:
             self.rmvspecificmooks(shiptype,rawnum)
             pos+=1        
 
-    def rmvslavemags(self,numlist): #numlist is a binary array with the mags being starting at position 0 and increasing, up to mag 16
+    def rmvslavemags(self,numlist): #numlist is a binary array with the mags being starting at position 0 and increasing, up to mag 20
         mags=[]
         basemag=self.baseslavemag
         mags.append(basemag)
-        for x in range(1,16):
+        for x in range(1,20):
             mags.append(mags[x-1]*2)
         pos=0
         for mag in numlist:

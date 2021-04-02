@@ -61,6 +61,7 @@ invincible=Shipgirl("Invincible","BB")
 kaguya=Shipgirl("Kaguya","DD")
 weeklist["Currentweek"].factionlist["assdumb"].addmember(kaguya)
 weeklist["Currentweek"].factionlist["assdumb"].addmember(invincible)
+weeklist["Currentweek"].factionlist["assdumb"].addspecificmooks("DD",15000)
 aval_types = ["SS", "DD", "CL", "CA", "CVL", "BB", "CV", "Installation", "Other"]  # same as the shipgirl class
 factionlist = []
 for key in weeklist["Currentweek"].factionlist.keys():
@@ -78,15 +79,13 @@ firstcolumn = [
 ]
 
 secondcolumn = [
-    [sg.Text("Mook Mags")],
-    [sg.Text("Mook Mag Numbers", key=("-mookmagnum-"))],
-    [sg.Text("Mooks Raw")],
-    [sg.Text("Mook Raw Numbers", key=("-mookrawnum-"))],
+    [sg.Text("Mook Mags"),sg.Text("                   "),sg.Text("Mooks Raw")],
+    [sg.Multiline("Mook Mag Numbers", key=("-mookmagnum-"),size=(20,14)),sg.Multiline("Mook Raw Numbers", key=("-mookrawnum-"),size=(20,14))],
     [sg.Text("Production")],
-    [sg.Text("Production Mags", key=("-prodmags-")), sg.Text("Production Raw", key=("-prodraw-"))],
+    [sg.Multiline("Production Mags", key=("-prodmags-"),size=(20,14)), sg.Multiline("Production Raw", key=("-prodraw-"),size=(20,14))],
     [sg.Text("ACB Numbers: "), sg.Text("", key=("-acbnums-"))],
     [sg.Text("Production per ACB")],
-    [sg.Text("",key="-acbprod-")]
+    [sg.Multiline("",key="-acbprod-")]
 ]
 
 thirdcolumn = [
@@ -147,8 +146,30 @@ while True:
         window.Element("-botelist-").Update(values=botelistupdate)
         numbotes=str(len(botelistupdate))
         window.Element("-botecount-").Update(value=numbotes)
-        #Shipgirl update is complete
-        
+        #Shipgirl list update complete
+        #Beginning of Mook numbers updating
+        magnumbers=weeklist["Currentweek"].factionlist[values["-factionname-"]].mooknum2mag()
+        window.Element("-mookmagnum-").Update(value=magnumbers)
+        rawnumbers=weeklist["Currentweek"].factionlist[values["-factionname-"]].getmooknums()
+        window.Element("-mookrawnum-").Update(value=rawnumbers)
+        #End of mook number update
+        #Start of Production update
+        prodmagnumbers=weeklist["Currentweek"].factionlist[values["-factionname-"]].getprodmags()
+        window.Element("-prodmags-").Update(value=prodmagnumbers)
+        prodrawnumbers=weeklist["Currentweek"].factionlist[values["-factionname-"]].getprodraw()
+        window.Element("-prodraw-").Update(value=prodrawnumbers)
+        window.Element("-acbnums-").Update(value=weeklist["Currentweek"].factionlist[values["-factionname-"]].acbnumber)
+        baseprod=weeklist["Currentweek"].factionlist[values["-factionname-"]].baseprod.getbaseprod()
+        window.Element("-acbprod-").Update(value=baseprod)
+        #End production updates
+        #start resource updates
+key="-resourcecount-"
+key="-resincome-"
+        #end resource updates
+        #start questionable updates
+
+key="-slavepopraw-"
+key="-slavepopmags-"
         
         
     else:
