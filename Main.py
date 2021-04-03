@@ -28,11 +28,15 @@ def addfactionwindow():
         print(event, values)
         if event == sg.WIN_CLOSED or event == 'Exit':
             break
-        elif event == "Add" and values["-fname-"] != None:
-            if (values["-basenum-"].isdecimal or values["-basenum-"] == '') and (
-                    values["-slavenum-"].isdecimal or values["-slavenum-"] == ''):
+            basenum=values["-basenum-"]
+            slavenum=values["-slavenum-"]
+            if basenum=='':
+                basenum=None
+            if slavenum =='':
+                slavenum-None           
+            if (basenum.isdecimal or basenum == None) and (slavenum.isdecimal or slavenum == None):
                 window.close()
-                return Faction(values["-fname-"], int(values["-basenum-"]), int(values["-slavenum-"]))
+                return Faction(values["-fname-"], int(basenum), int(slavenum))
             else:
                 sg.Popup("Please put number values or nothing for base numbers or slave numbers.")
     window.close()
