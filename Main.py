@@ -29,8 +29,8 @@ def addfactionwindow():
         if event == sg.WIN_CLOSED or event == 'Exit':
             break
         elif event == "Add" and values["-fname-"] != None:
-            if (values["-basenum-"].isdecimal or values["-basenum-"] == None) and (
-                    values["-slavenum-"].isdecimal or values["-slavenum-"] == None):
+            if (values["-basenum-"].isdecimal or values["-basenum-"] == '') and (
+                    values["-slavenum-"].isdecimal or values["-slavenum-"] == ''):
                 window.close()
                 return Faction(values["-fname-"], int(values["-basenum-"]), int(values["-slavenum-"]))
             else:
@@ -96,7 +96,7 @@ thirdcolumn = [
     [],
     [sg.Text("Slave Population:"), sg.Text("Numbers",key="-slavepopraw-")],
     [sg.Text("Slave Mags:")],
-    [sg.Text("Mags",key="-slavepopmags-")],
+    [sg.Multiline("Mags",key="-slavepopmags-")],
     [sg.Text("Slave to Mook Conversion")],
     [sg.Text("Slave to Mooks Conversion")],
     [sg.Text("Conversion Efficiency")],
@@ -138,9 +138,7 @@ while True:
 
         botelistupdate=[]
         botelist=weeklist["Currentweek"].factionlist[values["-factionname-"]].memberlist
-        yest=[]
         for girl in botelist:
-            yest.append(girl)
             botelistupdate.append(botelist[girl].shiptype+"-"+botelist[girl].name)
         botelistupdate.sort()
         window.Element("-botelist-").Update(values=botelistupdate)
@@ -167,10 +165,13 @@ while True:
         window.Element("-resincome-").Update(value=income)
         totalres=weeklist["Currentweek"].factionlist[values["-factionname-"]].getres()
         window.Element("-resourcecount-").Update(value=totalres)
-
         #end resource updates
         #start questionable updates
-
+        slavenums=weeklist["Currentweek"].factionlist[values["-factionname-"]].getslavenums()
+        window.Element("-slavepopraw-").Update(value=slavenums)
+        slavemags=weeklist["Currentweek"].factionlist[values["-factionname-"]].slavenum2mag()
+        window.Element("-slavepopmags-").Update(value=slavemags)
+        
 #key="-slavepopraw-"
 #key="-slavepopmags-"
         

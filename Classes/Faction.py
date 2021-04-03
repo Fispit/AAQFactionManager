@@ -102,14 +102,14 @@ class Faction:
         mooks=self.slavepop
         magquant=[]
         for num in mags:
-            if mooks%mags[num]==mooks:
+            if mooks%num==mooks:
                 magquant.append(0)
             else:
                 magquant.append(1)
                 mooks-=num
-        magquant.reverse() #puts the mags in order of first value being the lowest mag
         magamount=len(mags)
         magstring="Slave Mags: " 
+        print(magquant)
         for status in magquant:
             if status==1:
                 magstring+=str(magamount)+"+"
@@ -118,7 +118,6 @@ class Faction:
                 magamount-=1
         if magstring[len(magstring)-1]=="+":
             magstring=magstring[0:len(magstring)-1]
-            magstring+="\n"
         return magstring
     
     def getprodmags(self):
@@ -165,7 +164,7 @@ class Faction:
         self.slavepop=num
         
     def getslavenums(self):
-        mookreturn="Slave Population: "+self.slavepop+"\n"
+        mookreturn=str(self.slavepop)
         return mookreturn
             
     def addmookmags(self,numlist,shiptype:str,conveff=1): #numlist is a binary array with the mags being starting at position 0 and increasing, up to mag 20
