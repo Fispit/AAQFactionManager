@@ -109,7 +109,6 @@ class Faction:
                 mooks-=num
         magamount=len(mags)
         magstring="Slave Mags: " 
-        print(magquant)
         for status in magquant:
             if status==1:
                 magstring+=str(magamount)+"+"

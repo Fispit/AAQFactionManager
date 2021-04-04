@@ -19,24 +19,26 @@ def addfactionwindow():
     layout = [[sg.Text('Faction Name'), sg.Input(key='-fname-')],
               [sg.Text("Number of Bases"), sg.Input(key="-basenum-")],
               [sg.Text("Number of Slaves"), sg.Input(key="-slavenum-")],
-              [sg.Button('Add'), sg.Exit()]]
+              [sg.Button('Add',key="-addf-"), sg.Exit()]]
 
     window = sg.Window('Add Faction', layout)
 
     while True:  # The Event Loop
         event, values = window.read()
         print(event, values)
-        if event == sg.WIN_CLOSED or event == 'Exit':
-            break
-            basenum=values["-basenum-"]
-            slavenum=values["-slavenum-"]
-            if basenum=='':
+
+        basenum=values["-basenum-"]
+        slavenum=values["-slavenum-"]
+        if basenum=='':
                 basenum=None
-            if slavenum =='':
-                slavenum-None           
+        if slavenum =='':
+                slavenum=None
+        if event == sg.WIN_CLOSED or event == 'Exit':
+            break                
+        elif event=="-addf-":
             if (basenum.isdecimal or basenum == None) and (slavenum.isdecimal or slavenum == None):
-                window.close()
-                return Faction(values["-fname-"], int(basenum), int(slavenum))
+                    window.close()
+                    return Faction(values["-fname-"], int(basenum), int(slavenum))
             else:
                 sg.Popup("Please put number values or nothing for base numbers or slave numbers.")
     window.close()
@@ -54,6 +56,51 @@ def removefactionwindow(namelist):
             window.close()
             return values["-factions-"]
     window.close()
+    
+def addbotewindow():
+    layout = [[sg.Text('Shipgirl Name'), sg.Input(key='-botename-')],
+              [sg.Text("Shipgirl Class"), sg.Combo(Shipgirl.aval_types,size=(25,10),key="-boteclass-")],
+              [sg.Button('Add'), sg.Exit()]]
+    window = sg.Window('Add Shipgirl to Faction', layout)
+
+    while True:  # The Event Loop
+        event, values = window.read()
+        print(event, values)
+        if event == sg.WIN_CLOSED or event == 'Exit':
+            break
+            
+        elif event=='Add':  
+            botename=values["-botename-"]
+            boteclass=values["-boteclass-"]
+            if botename=='':
+                botename=None
+            if boteclass =='':
+                boteclass=None           
+            if not((botename == None) or (boteclass == None)):
+                window.close()
+                return Shipgirl(botename,boteclass)
+            else:
+                sg.Popup("Please in a name and class for the shipgirl.")
+    window.close()
+
+def rembotewindow(botelist):
+    layout = [[sg.Combo(botelist, size=(25, 5), key="-shipgirl-"), sg.Button("Remove"), sg.Button("Exit")]]
+    window = sg.Window("Remove Shipgirl", layout)
+
+    while True:
+        event, values = window.read()
+        if event == sg.WIN_CLOSED or event == 'Exit' or None or values["-shipgirl-"]=='':
+            break
+        if event == "Remove":
+            window.close()
+            returnvalues=values["-shipgirl-"].split("-")
+            return returnvalues[1]
+    window.close()    
+
+
+    
+
+
 
 
 weeklist = {}
@@ -175,10 +222,34 @@ while True:
         window.Element("-slavepopraw-").Update(value=slavenums)
         slavemags=weeklist["Currentweek"].factionlist[values["-factionname-"]].slavenum2mag()
         window.Element("-slavepopmags-").Update(value=slavemags)
+    elif event=="-addbote-":
+        newbote=addbotewindow()
+        if newbote == None:
+            newbote = newbote
+        else:
+            weeklist["Currentweek"].factionlist[values["-factionname-"]].addmember(newbote)
+        botelistupdate=[]
+        botelist=weeklist["Currentweek"].factionlist[values["-factionname-"]].memberlist
+        for girl in botelist:
+            botelistupdate.append(botelist[girl].shiptype+"-"+botelist[girl].name)
+        botelistupdate.sort()
+        window.Element("-botelist-").Update(values=botelistupdate)
+        numbotes=str(len(botelistupdate))
+        window.Element("-botecount-").Update(value=numbotes)
+    elif event=="-rmvbote-":
+        removedbote=rembotewindow(botelistupdate)
+        removedbote=weeklist["Currentweek"].factionlist[values["-factionname-"]].memberlist[removedbote]
+        weeklist["Currentweek"].factionlist[values["-factionname-"]].rmvmember(removedbote)
+        botelistupdate=[]
+        botelist=weeklist["Currentweek"].factionlist[values["-factionname-"]].memberlist
+        for girl in botelist:
+            botelistupdate.append(botelist[girl].shiptype+"-"+botelist[girl].name)
+        botelistupdate.sort()
+        window.Element("-botelist-").Update(values=botelistupdate)
+        numbotes=str(len(botelistupdate))
+        window.Element("-botecount-").Update(value=numbotes)
         
-#key="-slavepopraw-"
-#key="-slavepopmags-"
-        
+                
         
     else:
         print("Error")
