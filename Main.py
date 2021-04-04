@@ -255,7 +255,3 @@ while True:
         print("Error")
 
 window.close()
-
-
-def updateall(factionname, layout):
-    print("All window elements are updated here")
