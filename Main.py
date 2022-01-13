@@ -97,6 +97,22 @@ def rembotewindow(botelist):
             return returnvalues[1]
     window.close()    
 
+def transferbotewindow(botelist,factionlist):
+    layout = [[sg.Text("Shipgirl:"),sg.Combo(botelist, size=(25, 5), key="-shipgirl-")],
+              [sg.Text("To Faction:"),sg.Combo(factionlist,size=(25,5),key="-faction-")]
+              [sg.Button("Remove"), sg.Button("Exit")]]
+    window = sg.Window("Transfer Shipgirl", layout)
+
+    while True:
+        event, values = window.read()
+        if event == sg.WIN_CLOSED or event == 'Exit' or None or values["-shipgirl-"]=='':
+            break
+        if event == "Remove":
+            window.close()
+            returnvalues=values["-shipgirl-"].split("-")
+            return returnvalues[1]
+    window.close()    
+
 
     
 
@@ -156,7 +172,6 @@ thirdcolumn = [
 layout = [[sg.Column(firstcolumn), sg.VSeperator(), sg.Column(secondcolumn), sg.VSeperator(), sg.Column(thirdcolumn)]]
 window = sg.Window("AAQ - Faction Manager", layout)
 while True:
-    print("update attempt")
     event, values = window.read()  # add a check with a while loop around here to have a constantly updating ui based on faction.  Similar to the updateall call
     print(event)
     if event == "-addfaction-":
@@ -175,6 +190,7 @@ while True:
             deletedfaction = deletedfaction
         else:
             weeklist["Currentweek"].rmvfaction(weeklist["Currentweek"].factionlist[deletedfaction])
+            print("Went through delete if") #debugging check
         factionlist = []
         for key in weeklist["Currentweek"].factionlist.keys():
             factionlist.append(key)
@@ -187,8 +203,80 @@ while True:
         print("This changes all values when changing to faction: " + values["-factionname-"])
         #start by updating shipgirl counts and the list of names
 
+        # botelistupdate=[]
+        # botelist=weeklist["Currentweek"].factionlist[values["-factionname-"]].memberlist
+        # for girl in botelist:
+        #     botelistupdate.append(botelist[girl].shiptype+"-"+botelist[girl].name)
+        # botelistupdate.sort()
+        # window.Element("-botelist-").Update(values=botelistupdate)
+        # numbotes=str(len(botelistupdate))
+        # window.Element("-botecount-").Update(value=numbotes)
+        #Shipgirl list update complete
+        #Beginning of Mook numbers updating
+        # magnumbers=weeklist["Currentweek"].factionlist[values["-factionname-"]].mooknum2mag()
+        # window.Element("-mookmagnum-").Update(value=magnumbers)
+        # rawnumbers=weeklist["Currentweek"].factionlist[values["-factionname-"]].getmooknums()
+        # window.Element("-mookrawnum-").Update(value=rawnumbers)
+        # #End of mook number update
+        # #Start of Production update
+        # prodmagnumbers=weeklist["Currentweek"].factionlist[values["-factionname-"]].getprodmags()
+        # window.Element("-prodmags-").Update(value=prodmagnumbers)
+        # prodrawnumbers=weeklist["Currentweek"].factionlist[values["-factionname-"]].getprodraw()
+        # window.Element("-prodraw-").Update(value=prodrawnumbers)
+        # window.Element("-acbnums-").Update(value=weeklist["Currentweek"].factionlist[values["-factionname-"]].acbnumber)
+        # baseprod=weeklist["Currentweek"].factionlist[values["-factionname-"]].baseprod.getbaseprod()
+        # window.Element("-acbprod-").Update(value=baseprod)
+        # #End production updates
+        # #start resource updates
+        # income=weeklist["Currentweek"].factionlist[values["-factionname-"]].getincome()
+        # window.Element("-resincome-").Update(value=income)
+        # totalres=weeklist["Currentweek"].factionlist[values["-factionname-"]].getres()
+        # window.Element("-resourcecount-").Update(value=totalres)
+        # #end resource updates
+        # #start questionable updates
+        # slavenums=weeklist["Currentweek"].factionlist[values["-factionname-"]].getslavenums()
+        # window.Element("-slavepopraw-").Update(value=slavenums)
+        # slavemags=weeklist["Currentweek"].factionlist[values["-factionname-"]].slavenum2mag()
+        # window.Element("-slavepopmags-").Update(value=slavemags)
+    elif event=="-addbote-":
+        newbote=addbotewindow()
+        if newbote == None:
+            newbote = newbote
+        else:
+            weeklist["Currentweek"].factionlist[values["-factionname-"]].addmember(newbote)
         botelistupdate=[]
         botelist=weeklist["Currentweek"].factionlist[values["-factionname-"]].memberlist
+        # for girl in botelist:
+        #     botelistupdate.append(botelist[girl].shiptype+"-"+botelist[girl].name)
+        # botelistupdate.sort()
+        # window.Element("-botelist-").Update(values=botelistupdate)
+        # numbotes=str(len(botelistupdate))
+        # window.Element("-botecount-").Update(value=numbotes)
+    elif event=="-rmvbote-":
+        removedbote=rembotewindow(botelistupdate)
+        removedbote=weeklist["Currentweek"].factionlist[values["-factionname-"]].memberlist[removedbote]
+        weeklist["Currentweek"].factionlist[values["-factionname-"]].rmvmember(removedbote)
+        # botelistupdate=[]
+        # botelist=weeklist["Currentweek"].factionlist[values["-factionname-"]].memberlist
+        # for girl in botelist:
+        #     botelistupdate.append(botelist[girl].shiptype+"-"+botelist[girl].name)
+        # botelistupdate.sort()
+        # window.Element("-botelist-").Update(values=botelistupdate)
+        # numbotes=str(len(botelistupdate))
+        # window.Element("-botecount-").Update(value=numbotes)
+    elif event=="-transfbote-":
+        test=transferbotewindow(weeklist["Currentweek"].factionlist[values["-factionname-"]].memberlist,weeklist["Currentweek"].factionlist)
+        
+    else:
+        print("Error")
+        
+
+        
+    #updates the UI after changes are made
+    if values["-factionname-"] in weeklist["Currentweek"].factionlist:
+        print("Faction is in list")
+        botelistupdate=[]
+        botelist=weeklist["Currentweek"].factionlist[values["-factionname-"]].memberlist #used to cause a problem where it tried to update a a member list that didn't exist, it now updates with the first value of the faction list.
         for girl in botelist:
             botelistupdate.append(botelist[girl].shiptype+"-"+botelist[girl].name)
         botelistupdate.sort()
@@ -222,36 +310,48 @@ while True:
         window.Element("-slavepopraw-").Update(value=slavenums)
         slavemags=weeklist["Currentweek"].factionlist[values["-factionname-"]].slavenum2mag()
         window.Element("-slavepopmags-").Update(value=slavemags)
-    elif event=="-addbote-":
-        newbote=addbotewindow()
-        if newbote == None:
-            newbote = newbote
-        else:
-            weeklist["Currentweek"].factionlist[values["-factionname-"]].addmember(newbote)
+    else:#This section is used in case the faction being deleted is the one currently being viewed, resets view to the first value of the faction list
+        print("Faction is not in list")
         botelistupdate=[]
-        botelist=weeklist["Currentweek"].factionlist[values["-factionname-"]].memberlist
+        botelist=weeklist["Currentweek"].factionlist[list(weeklist["Currentweek"].factionlist.keys())[0]].memberlist 
         for girl in botelist:
-            botelistupdate.append(botelist[girl].shiptype+"-"+botelist[girl].name)
+            botelistupdate.append(botelist[girl].shiptype+"-"+botelist[girl].name)        
         botelistupdate.sort()
         window.Element("-botelist-").Update(values=botelistupdate)
         numbotes=str(len(botelistupdate))
         window.Element("-botecount-").Update(value=numbotes)
-    elif event=="-rmvbote-":
-        removedbote=rembotewindow(botelistupdate)
-        removedbote=weeklist["Currentweek"].factionlist[values["-factionname-"]].memberlist[removedbote]
-        weeklist["Currentweek"].factionlist[values["-factionname-"]].rmvmember(removedbote)
-        botelistupdate=[]
-        botelist=weeklist["Currentweek"].factionlist[values["-factionname-"]].memberlist
-        for girl in botelist:
-            botelistupdate.append(botelist[girl].shiptype+"-"+botelist[girl].name)
-        botelistupdate.sort()
-        window.Element("-botelist-").Update(values=botelistupdate)
-        numbotes=str(len(botelistupdate))
-        window.Element("-botecount-").Update(value=numbotes)
+        #Shipgirl list update complete
+        #Beginning of Mook numbers updating
+        magnumbers=weeklist["Currentweek"].factionlist[list(weeklist["Currentweek"].factionlist.keys())[0]].mooknum2mag()
+        window.Element("-mookmagnum-").Update(value=magnumbers)
+        rawnumbers=weeklist["Currentweek"].factionlist[list(weeklist["Currentweek"].factionlist.keys())[0]].getmooknums()
+        window.Element("-mookrawnum-").Update(value=rawnumbers)
+        #End of mook number update
+        #Start of Production update
+        prodmagnumbers=weeklist["Currentweek"].factionlist[list(weeklist["Currentweek"].factionlist.keys())[0]].getprodmags()
+        window.Element("-prodmags-").Update(value=prodmagnumbers)
+        prodrawnumbers=weeklist["Currentweek"].factionlist[list(weeklist["Currentweek"].factionlist.keys())[0]].getprodraw()
+        window.Element("-prodraw-").Update(value=prodrawnumbers)
+        window.Element("-acbnums-").Update(value=weeklist["Currentweek"].factionlist[list(weeklist["Currentweek"].factionlist.keys())[0]].acbnumber)
+        baseprod=weeklist["Currentweek"].factionlist[list(weeklist["Currentweek"].factionlist.keys())[0]].baseprod.getbaseprod()
+        window.Element("-acbprod-").Update(value=baseprod)
+        #End production updates
+        #start resource updates
+        income=weeklist["Currentweek"].factionlist[list(weeklist["Currentweek"].factionlist.keys())[0]].getincome()
+        window.Element("-resincome-").Update(value=income)
+        totalres=weeklist["Currentweek"].factionlist[list(weeklist["Currentweek"].factionlist.keys())[0]].getres()
+        window.Element("-resourcecount-").Update(value=totalres)
+        #end resource updates
+        #start questionable updates
+        slavenums=weeklist["Currentweek"].factionlist[list(weeklist["Currentweek"].factionlist.keys())[0]].getslavenums()
+        window.Element("-slavepopraw-").Update(value=slavenums)
+        slavemags=weeklist["Currentweek"].factionlist[list(weeklist["Currentweek"].factionlist.keys())[0]].slavenum2mag()
+        window.Element("-slavepopmags-").Update(value=slavemags)
+        
+        
         
                 
         
-    else:
-        print("Error")
+
 
 window.close()
