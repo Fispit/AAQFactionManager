@@ -59,7 +59,31 @@ class Faction:
         for shiptype in self.baseprod.production:
             mookreturn+=str(shiptype)+": "+str(self.mooknumbers[shiptype])+"\n"
         return mookreturn
-    
+
+    def addmookmags(self,numlist,shiptype:str,conveff=1): #numlist is a binary array with the mags being starting at position 0 and increasing, up to mag 20
+        mags=[]
+        basemag=self.baseprod.magnumbers[shiptype]
+        mags.append(basemag)
+        for x in range(1,20):
+            mags.append(mags[x-1]*2)
+        pos=0
+        for mag in numlist:
+            rawnum=mag*mags[pos]*conveff
+            self.addspecificmooks(shiptype,rawnum)
+            pos+=1
+
+    def rmvmookmags(self,numlist,shiptype:str):
+        mags=[]
+        basemag=self.baseprod.magnumbers[shiptype]
+        mags.append(basemag)
+        for x in range(1,20):
+            mags.append(mags[x-1]*2)
+        pos=0
+        for mag in numlist:
+            rawnum=mag*mags[pos]
+            self.rmvspecificmooks(shiptype,rawnum)
+            pos+=1        
+                
 
     def mooknum2mag(self):
         magstring=""
@@ -166,18 +190,7 @@ class Faction:
         mookreturn=str(self.slavepop)
         return mookreturn
             
-    def addmookmags(self,numlist,shiptype:str,conveff=1): #numlist is a binary array with the mags being starting at position 0 and increasing, up to mag 20
-        mags=[]
-        basemag=self.baseprod.magnumbers[shiptype]
-        mags.append(basemag)
-        for x in range(1,20):
-            mags.append(mags[x-1]*2)
-        pos=0
-        for mag in numlist:
-            rawnum=mag*mags[pos]*conveff
-            self.addspecificmooks(shiptype,rawnum)
-            pos+=1
-            
+
     def addslavemags(self,numlist): #numlist is a binary array with the mags being starting at position 0 and increasing, up to mag 20
         mags=[]
         basemag=self.baseslavemag
@@ -190,17 +203,7 @@ class Faction:
             self.addslaves(rawnum)
             pos+=1
         
-    def rmvmookmags(self,numlist,shiptype:str):
-        mags=[]
-        basemag=self.baseprod.magnumbers[shiptype]
-        mags.append(basemag)
-        for x in range(1,20):
-            mags.append(mags[x-1]*2)
-        pos=0
-        for mag in numlist:
-            rawnum=mag*mags[pos]
-            self.rmvspecificmooks(shiptype,rawnum)
-            pos+=1        
+
 
     def rmvslavemags(self,numlist): #numlist is a binary array with the mags being starting at position 0 and increasing, up to mag 20
         mags=[]
