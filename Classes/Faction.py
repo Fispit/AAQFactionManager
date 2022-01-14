@@ -231,9 +231,9 @@ class Faction:
             self.resourceincome["Energy"]=self.resourceincome["Fuel"]+self.resourceincome["Ammo"]
             self.resources["Matter"]=self.resources["Steel"]+self.resources["Exotics"]
             self.resources["Energy"]=self.resources["Fuel"]+self.resources["Ammo"]
-            resourcemode=2
-        elif resourcemode==2:
-            resourcemode==1 #made so that the user can go back in case of accidentally changing modes.
+            self.resourcemode=2
+        elif self.resourcemode==2:
+            self.resourcemode==1 #made so that the user can go back in case of accidentally changing modes.
             
     def addresources(self,restype,amount):
         self.resources[restype]+=amount

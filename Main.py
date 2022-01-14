@@ -7,7 +7,6 @@ Created on Tue Feb 16 18:34:02 2021
 
 from Classes.Shipgirl import Shipgirl
 from Classes.Faction import Faction
-from Classes.ConstructionBay import ConstructionBay
 from Classes.Weeks import AAQWeek
 import pickle as pck
 import PySimpleGUI as sg
@@ -17,15 +16,14 @@ sg.theme("DarkAmber")
 
 def addfactionwindow():
     layout = [[sg.Text('Faction Name'), sg.Input(key='-fname-')],
-              [sg.Text("Number of Bases"), sg.Input(key="-basenum-")],
-              [sg.Text("Number of Slaves"), sg.Input(key="-slavenum-")],
+              [sg.Text("Number of Bases"), sg.Input(key="-basenum-",default_text = "0")],
+              [sg.Text("Number of Slaves"), sg.Input(key="-slavenum-",default_text = "0")],
               [sg.Button('Add',key="-addf-"), sg.Exit()]]
 
     window = sg.Window('Add Faction', layout)
 
     while True:  # The Event Loop
         event, values = window.read()
-        print(event, values)
 
         basenum=values["-basenum-"]
         slavenum=values["-slavenum-"]
@@ -113,10 +111,60 @@ def transferbotewindow(botelist,factionlist):
             return returnvalues[1]
     window.close()    
 
-
-    
-
-
+def incomewindow(faction, method):
+    if faction.resourcemode==1:
+        layout=[[sg.Text('Steel'),sg.Input(key='-Steel-',default_text = "0")],
+                [sg.Text('Fuel'),sg.Input(key='-Fuel-',default_text = "0")],
+                [sg.Text('Ammo'),sg.Input(key='-Ammo-',default_text = "0")],
+                [sg.Text('Exotics'),sg.Input(key='-Exotics-',default_text = "0")],
+                [sg.Button('Set',key="-Setr-"), sg.Exit()]]
+    elif faction.resourcemode==2:
+        layout=[[sg.Text('Matter'),sg.Input(key='-Matter-',default_text = "")],
+                [sg.Text('Energy'),sg.Input(key='-Energy-',default_text = "")],
+                [sg.Button('Set',key="-Setr-"), sg.Exit()]]
+        
+    window=sg.Window(method+" income for "+ faction.factionname,layout)
+    while True:  # The Event Loop
+        event, values = window.read()
+        if event == sg.WIN_CLOSED or event == 'Exit':
+            break
+        elif event=="-Setr-":
+            if faction.resourcemode==1:
+                returndict={"Steel":values["-Steel-"],"Fuel":values["-Fuel-"],"Ammo":values["-Ammo-"],"Exotics":values["-Exotics-"]}
+                return returndict
+            elif faction.resourcemode==2:
+                returndict={"Matter":values["-Matter-"],"Energy":values["-Energy-"]}
+                return returndict
+        else:
+            break
+    window.close()
+def reswindow(faction, method):
+    if faction.resourcemode==1:
+        layout=[[sg.Text('Steel'),sg.Input(key='-Steel-',default_text = "0")],
+                [sg.Text('Fuel'),sg.Input(key='-Fuel-',default_text = "0")],
+                [sg.Text('Ammo'),sg.Input(key='-Ammo-',default_text = "0")],
+                [sg.Text('Exotics'),sg.Input(key='-Exotics-',default_text = "0")],
+                [sg.Button('Set',key="-Setr-"), sg.Exit()]]
+    elif faction.resourcemode==2:
+        layout=[[sg.Text('Matter'),sg.Input(key='-Matter-',default_text = "")],
+                [sg.Text('Energy'),sg.Input(key='-Energy-',default_text = "")],
+                [sg.Button('Set',key="-Setr-"), sg.Exit()]]
+        
+    window=sg.Window(method+" Resources for "+ faction.factionname,layout)
+    while True:  # The Event Loop
+        event, values = window.read()
+        if event == sg.WIN_CLOSED or event == 'Exit':
+            break
+        elif event=="-Setr-":
+            if faction.resourcemode==1:
+                returndict={"Steel":values["-Steel-"],"Fuel":values["-Fuel-"],"Ammo":values["-Ammo-"],"Exotics":values["-Exotics-"]}
+                return returndict
+            elif faction.resourcemode==2:
+                returndict={"Matter":values["-Matter-"],"Energy":values["-Energy-"]}
+                return returndict
+        else:
+            break
+    window.close()
 
 
 weeklist = {}
@@ -136,13 +184,12 @@ for key in weeklist["Currentweek"].factionlist.keys():
 
 firstcolumn = [
     [sg.Text("Faction Manager")],
-    [sg.Combo(factionlist, size=(25, 5), key="-factionname-", enable_events=True), sg.Button("View", key="-updateall-"),
+    [sg.Combo(factionlist, size=(25, 5), key="-factionname-", enable_events=True), sg.Button("View", key="-updateall-" ),
      sg.Button("Add Faction", key="-addfaction-"), sg.Button("Remove Faction", key="-rmvfaction-", enable_events=True)],
     [sg.Text("Memberlist")],
     [sg.Text("Faction Shipgirls"), sg.Text("Total girls:"),sg.Text("Number", key=("-botecount-"))],
     [sg.Listbox([], key="-botelist-", size=(60, 15))],
-    [sg.Button("Add Bote", key="-addbote-"), sg.Button("Remove Bote", key="-rmvbote-"),
-     sg.Button("Transfer Bote", key="-transfbote-")]
+    [sg.Button("Add Bote", key="-addbote-"), sg.Button("Remove Bote", key="-rmvbote-"),sg.Button("Transfer Bote", key="-transfbote-")]
 ]
 
 secondcolumn = [
@@ -159,8 +206,9 @@ thirdcolumn = [
     [sg.Text("Week #" + str(weeklist["Currentweek"].weeknum))],
     [sg.Text("Resources:"),sg.Text("              Resource Income:")],
     [sg.Multiline("Resources display",key="-resourcecount-",size=(16,5)),sg.Multiline("Income Display",key="-resincome-",size=(16,5))],
-    [],
-    [],
+    [sg.Button("Set Income",key="-setincome-"),sg.Button("Add Income",key="-addincome-"),sg.Button("Remove Income",key="-rmvincome-")],
+    [sg.Button("Set Resources",key="-setres-"),sg.Button("Add Resources",key="-addres-"),sg.Button("Remove Resources",key="-rmvres-")],
+    [sg.Button("Change Resource Mode",key="-resmode-")],
     [sg.Text("Slave Population:"), sg.Text("Numbers",key="-slavepopraw-")],
     [sg.Text("Slave Mags:")],
     [sg.Multiline("Mags",key="-slavepopmags-")],
@@ -190,7 +238,7 @@ while True:
             deletedfaction = deletedfaction
         else:
             weeklist["Currentweek"].rmvfaction(weeklist["Currentweek"].factionlist[deletedfaction])
-            print("Went through delete if") #debugging check
+            #print("Went through delete if") #debugging check
         factionlist = []
         for key in weeklist["Currentweek"].factionlist.keys():
             factionlist.append(key)
@@ -201,43 +249,41 @@ while True:
         factionname = values["-factionname-"]
     elif event == "-factionname-":
         print("This changes all values when changing to faction: " + values["-factionname-"])
-        #start by updating shipgirl counts and the list of names
-
-        # botelistupdate=[]
-        # botelist=weeklist["Currentweek"].factionlist[values["-factionname-"]].memberlist
-        # for girl in botelist:
-        #     botelistupdate.append(botelist[girl].shiptype+"-"+botelist[girl].name)
-        # botelistupdate.sort()
-        # window.Element("-botelist-").Update(values=botelistupdate)
-        # numbotes=str(len(botelistupdate))
-        # window.Element("-botecount-").Update(value=numbotes)
-        #Shipgirl list update complete
-        #Beginning of Mook numbers updating
-        # magnumbers=weeklist["Currentweek"].factionlist[values["-factionname-"]].mooknum2mag()
-        # window.Element("-mookmagnum-").Update(value=magnumbers)
-        # rawnumbers=weeklist["Currentweek"].factionlist[values["-factionname-"]].getmooknums()
-        # window.Element("-mookrawnum-").Update(value=rawnumbers)
-        # #End of mook number update
-        # #Start of Production update
-        # prodmagnumbers=weeklist["Currentweek"].factionlist[values["-factionname-"]].getprodmags()
-        # window.Element("-prodmags-").Update(value=prodmagnumbers)
-        # prodrawnumbers=weeklist["Currentweek"].factionlist[values["-factionname-"]].getprodraw()
-        # window.Element("-prodraw-").Update(value=prodrawnumbers)
-        # window.Element("-acbnums-").Update(value=weeklist["Currentweek"].factionlist[values["-factionname-"]].acbnumber)
-        # baseprod=weeklist["Currentweek"].factionlist[values["-factionname-"]].baseprod.getbaseprod()
-        # window.Element("-acbprod-").Update(value=baseprod)
-        # #End production updates
-        # #start resource updates
-        # income=weeklist["Currentweek"].factionlist[values["-factionname-"]].getincome()
-        # window.Element("-resincome-").Update(value=income)
-        # totalres=weeklist["Currentweek"].factionlist[values["-factionname-"]].getres()
-        # window.Element("-resourcecount-").Update(value=totalres)
-        # #end resource updates
-        # #start questionable updates
-        # slavenums=weeklist["Currentweek"].factionlist[values["-factionname-"]].getslavenums()
-        # window.Element("-slavepopraw-").Update(value=slavenums)
-        # slavemags=weeklist["Currentweek"].factionlist[values["-factionname-"]].slavenum2mag()
-        # window.Element("-slavepopmags-").Update(value=slavemags)
+        
+    #This section serves to make the income and resource tabs functional
+    elif event=="-setincome-":
+        newincome=incomewindow(weeklist["Currentweek"].factionlist[values["-factionname-"]],"Set")
+        if newincome != None:
+            for element in newincome:
+                weeklist["Currentweek"].factionlist[values["-factionname-"]].setresincome(element,int(newincome[element])) 
+    elif event=="-addincome-":
+        newincome=incomewindow(weeklist["Currentweek"].factionlist[values["-factionname-"]],"Add")
+        if newincome != None:
+            for element in newincome:
+                weeklist["Currentweek"].factionlist[values["-factionname-"]].addresincome(element,int(newincome[element]))
+    elif event=="-rmvincome-":
+        newincome=incomewindow(weeklist["Currentweek"].factionlist[values["-factionname-"]],"Remove")
+        if newincome != None:
+            for element in newincome:
+                weeklist["Currentweek"].factionlist[values["-factionname-"]].rmvresincome(element,int(newincome[element]) )   
+    elif event=="-setres-":
+        newincome=reswindow(weeklist["Currentweek"].factionlist[values["-factionname-"]],"Set")
+        if newincome != None:
+            for element in newincome:
+                weeklist["Currentweek"].factionlist[values["-factionname-"]].setresources(element,int(newincome[element]))
+    elif event=="-addres-":
+        newincome=reswindow(weeklist["Currentweek"].factionlist[values["-factionname-"]],"Add")
+        if newincome != None:
+            for element in newincome:
+                weeklist["Currentweek"].factionlist[values["-factionname-"]].addresources(element,int(newincome[element]))
+    elif event=="-rmvres-":
+        newincome=reswindow(weeklist["Currentweek"].factionlist[values["-factionname-"]],"Remove")
+        if newincome != None:
+            for element in newincome:
+                weeklist["Currentweek"].factionlist[values["-factionname-"]].rmvresources(element,int(newincome[element]) )   
+    elif event=="-resmode-":
+        weeklist["Currentweek"].factionlist[values["-factionname-"]].changeresmode()
+            
     elif event=="-addbote-":
         newbote=addbotewindow()
         if newbote == None:
