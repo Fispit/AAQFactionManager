@@ -82,7 +82,7 @@ def addbotewindow():
     window.close()
 
 def rembotewindow(botelist):
-    layout = [[sg.Combo(botelist, size=(25, 5), key="-shipgirl-"), sg.Button("Remove"), sg.Button("Exit")]]
+    layout = [[sg.Combo(botelist, size=(25, 5), key="-shipgirl-"), sg.Button("Remove"), sg.Exit()]]
     window = sg.Window("Remove Shipgirl", layout)
 
     while True:
@@ -96,19 +96,28 @@ def rembotewindow(botelist):
     window.close()    
 
 def transferbotewindow(botelist,factionlist):
-    layout = [[sg.Text("Shipgirl:"),sg.Combo(botelist, size=(25, 5), key="-shipgirl-")],
-              [sg.Text("To Faction:"),sg.Combo(factionlist,size=(25,5),key="-faction-")]
-              [sg.Button("Remove"), sg.Button("Exit")]]
+    print(botelist)
+    print(factionlist)
+    layout = [[sg.Text("Shipgirl:"),sg.Combo(botelist, size=(25,5), key="-shipgirl-")],
+              [sg.Text("To Faction:"),sg.Combo(factionlist,size=(25,5),key="-faction-")],
+              [sg.Button("Transfer",key="-transfer-"), sg.Exit()]]
     window = sg.Window("Transfer Shipgirl", layout)
 
     while True:
         event, values = window.read()
-        if event == sg.WIN_CLOSED or event == 'Exit' or None or values["-shipgirl-"]=='':
+
+        if event == sg.WIN_CLOSED or event == 'Exit' or None:
             break
-        if event == "Remove":
-            window.close()
-            returnvalues=values["-shipgirl-"].split("-")
-            return returnvalues[1]
+        if event == "-transfer-":
+            if values["-faction-"] == '' or values["-shipgirl-"] == '':
+                print("test")
+                sg.Popup("Please set all values")
+            else:
+                botename=values["-shipgirl-"].split("-")[1]
+                returnvalues={"faction":values["-faction-"],"shipgirl":botename}
+                print(returnvalues)
+                window.close()
+                return returnvalues
     window.close()    
 
 def incomewindow(faction, method):
@@ -170,62 +179,85 @@ def reswindow(faction, method):
             break
     window.close()
 
-def mookwindow(faction, method, mode):
-    if mode==1:
-        layout=[]
-        layout.append([sg.Text("Set Mag Values")])
-        for element in faction.baseprod.production:
-            layout.append([sg.Text(element)])
-            if method =="Set":
-                layout.append([sg.Input(key=f"-{element}-",default_text = f"{faction.mooknumbers[element]}")])
-            else:
-                layout.append([sg.Input(key=f"-{element}-",default_text ="0" )])
-        layout.append([sg.Button(f"{method}",key="-Setr-"), sg.Exit()])
-            
-                
-            
-    elif mode==2:
-        layout=[]
-        layout.append([sg.Text("Set Mag Values")])
-        for element in faction.baseprod.production:
-            layout.append([sg.Text(element)])
-            layoutrow=[]
-            layoutrowlabel=[]
-            if method =="Set":
-                for number in range(1,21):
-                    layoutrowlabel.append(sg.Text(f"{number}",size = (4, 1),pad=(3,5)))
-                    layoutrow.append(sg.Input(key=f"-{element}{number}-",default_text = "0",size = (4, 1)))
-                layout.append(layoutrowlabel)
-                layout.append(layoutrow)
-            else:
-                for number in range(1,21):
-                    layoutrowlabel.append(sg.Text(f"{number}",size = (4, 1),pad=(3,5)))
-                    layoutrow.append(sg.Input(key=f"-{element}{number}-",default_text = "0",size = (4, 1)))
-                layout.append(layoutrowlabel)
-                layout.append(layoutrow)
-
-        layout.append([sg.Button(f"{method}",key="-setval-"), sg.Exit()])
-    
-    
-    
-    print(layout)
+def mookwindow(faction, method):
+    layout=[]
+    layout.append([sg.Text("Set Mook Values")])
+    for element in faction.baseprod.production:
+        layout.append([sg.Text(element)])
+        if method =="Set":
+            layout.append([sg.Input(key=f"-{element}-",default_text = f"{faction.mooknumbers[element]}")])
+        else:
+            layout.append([sg.Input(key=f"-{element}-",default_text ="0" )])
+    layout.append([sg.Button(f"{method}",key="-setval-"), sg.Exit()])
+        
     window=sg.Window(method+" Mooks for "+ faction.factionname,layout)
     while True:  # The Event Loop
         event, values = window.read()
+
         if event == sg.WIN_CLOSED or event == 'Exit':
             break
         elif event=="-setval-":
-            if faction.mode==1:
-                returndict={"Steel":values["-Steel-"],"Fuel":values["-Fuel-"],"Ammo":values["-Ammo-"],"Exotics":values["-Exotics-"]}
-                window.close()
-                return returndict
-            elif faction.mode==2:
-                returndict={"Matter":values["-Matter-"],"Energy":values["-Energy-"]}
-                window.close()
-                return returndict
+
+            returndict={}
+            for element in faction.baseprod.production:
+                returndict[element]=returndict.get(element,int(values[f"-{element}-"]))
+
+            window.close()
+            return returndict
         else:
             break
     window.close()
+
+
+def setprod(faction):
+    layout=[[sg.Text("Number of ACBs"),sg.Input(key='-acbnum-',default_text=f"{faction.acbnumber}")],
+            [sg.Text("Production Multiplier"),sg.Input(key='-prodmult-',default_text=f"{faction.baseprod.prodmultiplier}")],
+            [sg.Button('Set',key="-Setr-"), sg.Exit()]            
+        ]
+    
+    window = sg.Window("Set Production", layout)
+
+    while True:
+        event, values = window.read()
+        if event == sg.WIN_CLOSED or event == 'Exit' or None or values["-shipgirl-"]=='':
+            break
+        if event == "-Setr-":
+            
+
+            returnvalues={"acbnum":int(values["-acbnum-"]),"prodmult":float(values["-prodmult-"])}
+            window.close()
+            return returnvalues
+    window.close()    
+
+def acbtweak(faction):
+    layout=[]
+    layout.append([sg.Text("Set Mook Values")])
+    for element in faction.baseprod.production:
+        layout.append([sg.Text(element)])
+        layout.append([sg.Input(key=f"-{element}-",default_text = f"{faction.baseprod.production[element]}")])
+        
+    layout.append([sg.Button("Set ACB Production ",key="-setval-"), sg.Exit()])
+   
+    window=sg.Window("Production per ACB for "+ faction.factionname,layout)
+    print("Finished layout")
+    while True:  # The Event Loop
+        event, values = window.read()
+
+        if event == sg.WIN_CLOSED or event == 'Exit':
+            break
+        elif event=="-setval-":
+
+            returndict={}
+            for element in faction.baseprod.production:
+                returndict[element]=returndict.get(element,int(values[f"-{element}-"]))
+
+            window.close()
+            return returndict
+        else:
+            break
+    window.close()
+        
+
 
 #Main window start
 weeklist = {}
@@ -253,7 +285,7 @@ firstcolumn = [
     [sg.Button("Add Bote", key="-addbote-"), sg.Button("Remove Bote", key="-rmvbote-"),sg.Button("Transfer Bote", key="-transfbote-")],
     [sg.Text("Mook Management")],
     [sg.Button("Add Mooks",key="-addmooks-"),sg.Button("Remove Mooks",key="-rmvmooks-"),sg.Button("Set Mooks",key="-setmooks-")],
-    [sg.Button("Add Mags",key="-addmookmag-"),sg.Button("Remove Mags",key="-rmvmookmag-"),sg.Button("Set Mags",key="-setmookmag-")]
+    [sg.Button("Set Production",key="-setprod-"),sg.Button("Tweak ACB Production",key="-tweakacb-")]
 ]
 
 secondcolumn = [
@@ -261,7 +293,7 @@ secondcolumn = [
     [sg.Multiline("Mook Mag Numbers", key=("-mookmagnum-"),size=(20,14)),sg.Multiline("Mook Raw Numbers", key=("-mookrawnum-"),size=(20,14))],
     [sg.Text("Production")],
     [sg.Multiline("Production Mags", key=("-prodmags-"),size=(20,14)), sg.Multiline("Production Raw", key=("-prodraw-"),size=(20,14))],
-    [sg.Text("ACB Numbers: "), sg.Text("", key=("-acbnums-"))],
+    [sg.Text("ACB Numbers: "), sg.Text("", key="-acbnums-",size=(5,1))],
     [sg.Text("Production per ACB")],
     [sg.Multiline("",key="-acbprod-")]
 ]
@@ -348,14 +380,35 @@ while True:
                     weeklist["Currentweek"].factionlist[values["-factionname-"]].rmvresources(element,int(newincome[element]) )   
         elif event=="-resmode-":
             weeklist["Currentweek"].factionlist[values["-factionname-"]].changeresmode()
-        elif event=="-addmookmag-":
-            mookvalues=mookwindow(weeklist["Currentweek"].factionlist[values["-factionname-"]], "Add", 2)
-                
+        elif event=="-addmooks-":
+            mookvalues=mookwindow(weeklist["Currentweek"].factionlist[values["-factionname-"]], "Add")
+            if mookvalues!= None:
+                for element in mookvalues:
+                    weeklist["Currentweek"].factionlist[values["-factionname-"]].addspecificmooks(element,mookvalues[element])
+        elif event=="-rmvmooks-":
+            mookvalues=mookwindow(weeklist["Currentweek"].factionlist[values["-factionname-"]], "Remove")
+            if mookvalues!= None:
+                for element in mookvalues:
+                    weeklist["Currentweek"].factionlist[values["-factionname-"]].rmvspecificmooks(element,mookvalues[element])
+        elif event=="-setmooks-":
+            mookvalues=mookwindow(weeklist["Currentweek"].factionlist[values["-factionname-"]], "Set")
+            if mookvalues!= None:
+                for element in mookvalues:
+                    weeklist["Currentweek"].factionlist[values["-factionname-"]].setmooks(element,mookvalues[element])
+        elif event=="-setprod-":
+            prodvalues=setprod(weeklist["Currentweek"].factionlist[values["-factionname-"]])
+            if prodvalues != None:
+                weeklist["Currentweek"].factionlist[values["-factionname-"]].acbnumber=prodvalues["acbnum"]
+                weeklist["Currentweek"].factionlist[values["-factionname-"]].baseprod.prodmultiplier=prodvalues["prodmult"]
+        elif event=="-tweakacb-":
+            tweakvalues=acbtweak(weeklist["Currentweek"].factionlist[values["-factionname-"]])
+            if tweakvalues != None:
+                weeklist["Currentweek"].factionlist[values["-factionname-"]].baseprod.production=tweakvalues
+            
+            
         elif event=="-addbote-":
             newbote=addbotewindow()
-            if newbote == None:
-                newbote = newbote
-            else:
+            if newbote!= None:
                 weeklist["Currentweek"].factionlist[values["-factionname-"]].addmember(newbote)
             botelistupdate=[]
             botelist=weeklist["Currentweek"].factionlist[values["-factionname-"]].memberlist
@@ -367,8 +420,9 @@ while True:
             # window.Element("-botecount-").Update(value=numbotes)
         elif event=="-rmvbote-":
             removedbote=rembotewindow(botelistupdate)
-            removedbote=weeklist["Currentweek"].factionlist[values["-factionname-"]].memberlist[removedbote]
-            weeklist["Currentweek"].factionlist[values["-factionname-"]].rmvmember(removedbote)
+            if removedbote!= None:
+                removedbote=weeklist["Currentweek"].factionlist[values["-factionname-"]].memberlist[removedbote]
+                weeklist["Currentweek"].factionlist[values["-factionname-"]].rmvmember(removedbote)
             # botelistupdate=[]
             # botelist=weeklist["Currentweek"].factionlist[values["-factionname-"]].memberlist
             # for girl in botelist:
@@ -378,8 +432,14 @@ while True:
             # numbotes=str(len(botelistupdate))
             # window.Element("-botecount-").Update(value=numbotes)
         elif event=="-transfbote-":
-            test=transferbotewindow(weeklist["Currentweek"].factionlist[values["-factionname-"]].memberlist,weeklist["Currentweek"].factionlist)
-            
+            transfdata=transferbotewindow(botelistupdate,factionlist)
+            if transfdata!= None:
+                bote=weeklist["Currentweek"].factionlist[values["-factionname-"]].memberlist[transfdata["shipgirl"]]
+                weeklist["Currentweek"].factionlist[values["-factionname-"]].rmvmember(bote)#removes the shipgirl from her current faction
+                transffaction=transfdata["faction"]
+                weeklist["Currentweek"].factionlist[transffaction].addmember(bote)#adds her to the new faction
+                
+                
         else:
             print("Error")
             
@@ -387,7 +447,6 @@ while True:
         
     #updates the UI after changes are made
         if values["-factionname-"] in weeklist["Currentweek"].factionlist:
-            print("Faction is in list")
             botelistupdate=[]
             botelist=weeklist["Currentweek"].factionlist[values["-factionname-"]].memberlist #used to cause a problem where it tried to update a a member list that didn't exist, it now updates with the first value of the faction list.
             for girl in botelist:

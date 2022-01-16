@@ -37,14 +37,15 @@ class Faction:
 
     def rmvmember(self, bote:Shipgirl):
         self.memberlist.pop(bote.name)
+        
     
             
     def addweekmooks(self):
         for key in self.baseprod.production:
             if key in self.mooknumbers.keys():
-                self.mooknumbers[key]+=self.baseprod.production[key]*self.baseprod.prodmultiplier*self.acbnumber
+                self.mooknumbers[key]+=int(self.baseprod.production[key]*self.baseprod.prodmultiplier*self.acbnumber)
             else:
-                self.mooknumbers[key]=self.mooknumbers.get(key,self.baseprod.production[key]*self.baseprod.prodmultiplier*self.acbnumber)
+                self.mooknumbers[key]=int(self.mooknumbers.get(key,self.baseprod.production[key]*self.baseprod.prodmultiplier*self.acbnumber))
     
     def addspecificmooks(self,key,number):
         self.mooknumbers[key]+=number
