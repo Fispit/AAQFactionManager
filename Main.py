@@ -519,11 +519,13 @@ while True:
                 weeklist["Currentweek"].factionlist[values["-factionname-"]].baseprod.addmagtype(prodtype["class"],prodtype["magsize"])    
 
         elif event=="-remgprodtype-":
-            sg.Popup("Warning: Removing a Ship Class from Global production will delete it from all factions that are currently producing it.")
+            sg.Popup("Warning: Removing a Ship Class from Global production will erase it from all locations.")
             prodtype=rmvcustomprodtype(faction)
             print(prodtype)
             if prodtype != None:
-                weeklist["Currentweek"].factionlist[values["-factionname-"]].baseprod.remmagtype(prodtype)                
+                weeklist["Currentweek"].factionlist[values["-factionname-"]].baseprod.remmagtype(prodtype)
+                weeklist["Currentweek"].factionlist[values["-factionname-"]].mooknumbers.pop(prodtype)
+                weeklist["Currentweek"].factionlist[values["-factionname-"]].baseprod.removetype(prodtype)                       
                 
                 
         elif event=="-addbote-":

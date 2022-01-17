@@ -91,39 +91,39 @@ class Faction:
         print("---------")
         for shiptype in self.mooknumbers:
             mags=[]
+            if shiptype in self.baseprod.magnumbers:
+                basemag=self.baseprod.magnumbers[shiptype]
 
-            basemag=self.baseprod.magnumbers[shiptype]
-
+                mags.append(basemag)
+                for x in range(1,20):
+                    mags.append(mags[x-1]*2)
+                mags.reverse()
                 
-            mags.append(basemag)
-            for x in range(1,20):
-                mags.append(mags[x-1]*2)
-            mags.reverse()
-            
-            mooks=self.mooknumbers[shiptype]
-
-            magquant=[]
-            
-            for num in mags:
-                if mooks%num==mooks:
-                    magquant.append(0)
-                else:
-                    magquant.append(1)
-                    mooks-=num
-            print("2")
-            magamount=len(mags)
-            magstring+=shiptype+": "
-            for status in magquant:
+                mooks=self.mooknumbers[shiptype]
+    
+                magquant=[]
                 
-                if status==1:
-                    magstring+=str(magamount)+"+"
-                    magamount-=1
-                else:
-                    magamount-=1
-            if magstring[len(magstring)-1]=="+":
-                magstring=magstring[0:len(magstring)-1]
-            magstring+="\n"
-        
+                for num in mags:
+                    if mooks%num==mooks:
+                        magquant.append(0)
+                    else:
+                        magquant.append(1)
+                        mooks-=num
+                print("2")
+                magamount=len(mags)
+                magstring+=shiptype+": "
+                for status in magquant:
+                    
+                    if status==1:
+                        magstring+=str(magamount)+"+"
+                        magamount-=1
+                    else:
+                        magamount-=1
+                if magstring[len(magstring)-1]=="+":
+                    magstring=magstring[0:len(magstring)-1]
+                magstring+="\n"
+            else:
+                basemag=0
         return magstring
         
     def slavenum2mag(self):
@@ -157,31 +157,34 @@ class Faction:
         magstring=""
         for shiptype in self.baseprod.production:
             mags=[]
-            basemag=self.baseprod.magnumbers[shiptype]
-            mags.append(basemag)
-            for x in range(1,20):
-                mags.append(mags[x-1]*2)
-            mags.reverse()
-            mooks=self.baseprod.production[shiptype]*self.acbnumber
-            magquant=[]
-            for num in mags:
-                if mooks%num==mooks:
-                    magquant.append(0)
-                else:
-                    magquant.append(1)
-                    mooks-=num
-
-            magamount=len(mags)
-            magstring+=shiptype+": "
-            for status in magquant:
-                if status==1:
-                    magstring+=str(magamount)+"+"
-                    magamount-=1
-                else:
-                    magamount-=1
-            if magstring[len(magstring)-1]=="+":
-                magstring=magstring[0:len(magstring)-1]
-            magstring+="\n"
+            if shiptype in self.baseprod.magnumbers:
+                basemag=self.baseprod.magnumbers[shiptype]
+                mags.append(basemag)
+                for x in range(1,20):
+                    mags.append(mags[x-1]*2)
+                mags.reverse()
+                mooks=self.baseprod.production[shiptype]*self.acbnumber
+                magquant=[]
+                for num in mags:
+                    if mooks%num==mooks:
+                        magquant.append(0)
+                    else:
+                        magquant.append(1)
+                        mooks-=num
+    
+                magamount=len(mags)
+                magstring+=shiptype+": "
+                for status in magquant:
+                    if status==1:
+                        magstring+=str(magamount)+"+"
+                        magamount-=1
+                    else:
+                        magamount-=1
+                if magstring[len(magstring)-1]=="+":
+                    magstring=magstring[0:len(magstring)-1]
+                magstring+="\n"
+            else:
+                basemag=0
         return magstring
     
     def getprodraw(self):
