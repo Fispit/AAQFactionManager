@@ -57,7 +57,7 @@ class Faction:
         
     def getmooknums(self):
         mookreturn=""
-        for shiptype in self.baseprod.production:
+        for shiptype in self.mooknumbers:
             mookreturn+=str(shiptype)+": "+str(self.mooknumbers[shiptype])+"\n"
         return mookreturn
 
@@ -88,25 +88,33 @@ class Faction:
 
     def mooknum2mag(self):
         magstring=""
-        for shiptype in self.baseprod.production:
+        print("---------")
+        for shiptype in self.mooknumbers:
             mags=[]
+
             basemag=self.baseprod.magnumbers[shiptype]
+
+                
             mags.append(basemag)
             for x in range(1,20):
                 mags.append(mags[x-1]*2)
             mags.reverse()
+            
             mooks=self.mooknumbers[shiptype]
+
             magquant=[]
+            
             for num in mags:
                 if mooks%num==mooks:
                     magquant.append(0)
                 else:
                     magquant.append(1)
                     mooks-=num
-
+            print("2")
             magamount=len(mags)
             magstring+=shiptype+": "
             for status in magquant:
+                
                 if status==1:
                     magstring+=str(magamount)+"+"
                     magamount-=1
@@ -115,6 +123,7 @@ class Faction:
             if magstring[len(magstring)-1]=="+":
                 magstring=magstring[0:len(magstring)-1]
             magstring+="\n"
+        
         return magstring
         
     def slavenum2mag(self):

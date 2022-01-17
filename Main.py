@@ -256,9 +256,97 @@ def acbtweak(faction):
         else:
             break
     window.close()
+
+def addprodtype(faction):
+
+    typelist=[]
+    for element in faction.baseprod.magnumbers:
+        if element not in list(faction.baseprod.production.keys()):
+            typelist.append(element)
+    layout=[[sg.Combo(typelist, size=(15,1),key="-shiptype-"),sg.Button("Add",key="-add-")],
+        ]
+    
+    window=sg.Window("Add a production type for "+ faction.factionname,layout)
+    while True:  # The Event Loop
+        event, values = window.read()
+
+        if event == sg.WIN_CLOSED or event == 'Exit':
+            break
+        elif event=="-add-":
+            print("adding")
+            returnstring=values["-shiptype-"]
+            window.close()
+            return returnstring
+        else:
+            break
+    window.close()
+    
+def rmvprodtype(faction):
+
+    typelist=[]
+    for element in faction.baseprod.production:
+            typelist.append(element)
+    layout=[[sg.Combo(typelist, size=(15,1),key="-shiptype-"),sg.Button("Remove",key="-add-")]
+        ]
+    
+    window=sg.Window("Remove a production type from "+ faction.factionname,layout)
+    while True:  # The Event Loop
+        event, values = window.read()
+
+        if event == sg.WIN_CLOSED or event == 'Exit':
+            break
+        elif event=="-add-":
+            returnstring=values["-shiptype-"]
+            window.close()
+            return returnstring
+        else:
+            break
+    window.close()
+
+def customprodtype(faction):
+
+    layout=[[sg.Text("Ship Class Designation: "),sg.Input(key="-class-")],
+            [sg.Text("Base Mag Size: "), sg.Input(key="-size-")],
+            [sg.Button("Add",key="-add-"),sg.Exit()]
+            
+        ]
+    
+    window=sg.Window("Add/Remove a custom production type for "+ faction.factionname,layout)
+    while True:  # The Event Loop
+        event, values = window.read()
+
+        if event == sg.WIN_CLOSED or event == 'Exit':
+            break
+        elif event=="-add-":
+            returndict={"class":values["-class-"],"magsize":int(values["-size-"])}
+            window.close()
+            return returndict
+        else:
+            break
+    window.close()
+    
+def rmvcustomprodtype(faction):
+    typelist=[]
+    for element in faction.baseprod.magnumbers:
+            typelist.append(element)
+    layout=[[sg.Combo(typelist, size=(15,1),key="-shiptype-"),sg.Button("Remove",key="-add-")]
+        ] 
+            
         
+    
+    window=sg.Window("Add/Remove a custom production type for "+ faction.factionname,layout)
+    while True:  # The Event Loop
+        event, values = window.read()
 
-
+        if event == sg.WIN_CLOSED or event == 'Exit':
+            break
+        elif event=="-add-":
+            window.close()
+            print("returning")
+            return values["-shiptype-"]
+        else:
+            break
+    window.close()
 #Main window start
 weeklist = {}
 weeklist["Currentweek"] = weeklist.get("Currentweek", AAQWeek())
@@ -285,7 +373,10 @@ firstcolumn = [
     [sg.Button("Add Bote", key="-addbote-"), sg.Button("Remove Bote", key="-rmvbote-"),sg.Button("Transfer Bote", key="-transfbote-")],
     [sg.Text("Mook Management")],
     [sg.Button("Add Mooks",key="-addmooks-"),sg.Button("Remove Mooks",key="-rmvmooks-"),sg.Button("Set Mooks",key="-setmooks-")],
-    [sg.Button("Set Production",key="-setprod-"),sg.Button("Tweak ACB Production",key="-tweakacb-")]
+    [sg.Text("Production Management")],
+    [sg.Button("Set Production",key="-setprod-"),sg.Button("Tweak ACB Production",key="-tweakacb-")],
+    [sg.Button("Add Type to Production",key="-addprodtype-"),sg.Button("Remove Type from Production",key="-rmvprodtype-")],
+    [sg.Button("Add Global Custom Production Type",key="-customprodtype-"),sg.Button("Remove Global Production Type",key="-remgprodtype-")]
 ]
 
 secondcolumn = [
@@ -319,7 +410,11 @@ while True:
     event, values = window.read()  # add a check with a while loop around here to have a constantly updating ui based on faction.  Similar to the updateall call
     print(event)
     try:
-        if event == "-addfaction-":
+        faction=weeklist["Currentweek"].factionlist[values["-factionname-"]]
+        if event == sg.WIN_CLOSED or event == None:
+            sg.Popup("Test")
+            break
+        elif event == "-addfaction-":
             newfaction = addfactionwindow()
             if newfaction == None:
                 newfaction = newfaction
@@ -340,8 +435,7 @@ while True:
             for key in weeklist["Currentweek"].factionlist.keys():
                 factionlist.append(key)
             window.Element("-factionname-").update(values=factionlist)
-        elif event == sg.WIN_CLOSED:
-            break
+
         elif event == "-updateall-":  # this will update all the elements in the UI with the faction's info
             factionname = values["-factionname-"]
         elif event == "-factionname-":
@@ -349,63 +443,89 @@ while True:
             
         #This section serves to make the income and resource tabs functional
         elif event=="-setincome-":
-            newincome=incomewindow(weeklist["Currentweek"].factionlist[values["-factionname-"]],"Set")
+            newincome=incomewindow(faction,"Set")
             if newincome != None:
                 for element in newincome:
                     weeklist["Currentweek"].factionlist[values["-factionname-"]].setresincome(element,int(newincome[element])) 
         elif event=="-addincome-":
-            newincome=incomewindow(weeklist["Currentweek"].factionlist[values["-factionname-"]],"Add")
+            newincome=incomewindow(faction,"Add")
             if newincome != None:
                 for element in newincome:
                     weeklist["Currentweek"].factionlist[values["-factionname-"]].addresincome(element,int(newincome[element]))
         elif event=="-rmvincome-":
-            newincome=incomewindow(weeklist["Currentweek"].factionlist[values["-factionname-"]],"Remove")
+            newincome=incomewindow(faction,"Remove")
             if newincome != None:
                 for element in newincome:
                     weeklist["Currentweek"].factionlist[values["-factionname-"]].rmvresincome(element,int(newincome[element]) )   
         elif event=="-setres-":
-            newincome=reswindow(weeklist["Currentweek"].factionlist[values["-factionname-"]],"Set")
+            newincome=reswindow(faction,"Set")
             if newincome != None:
                 for element in newincome:
                     weeklist["Currentweek"].factionlist[values["-factionname-"]].setresources(element,int(newincome[element]))
         elif event=="-addres-":
-            newincome=reswindow(weeklist["Currentweek"].factionlist[values["-factionname-"]],"Add")
+            newincome=reswindow(faction,"Add")
             if newincome != None:
                 for element in newincome:
                     weeklist["Currentweek"].factionlist[values["-factionname-"]].addresources(element,int(newincome[element]))
         elif event=="-rmvres-":
-            newincome=reswindow(weeklist["Currentweek"].factionlist[values["-factionname-"]],"Remove")
+            newincome=reswindow(faction,"Remove")
             if newincome != None:
                 for element in newincome:
                     weeklist["Currentweek"].factionlist[values["-factionname-"]].rmvresources(element,int(newincome[element]) )   
         elif event=="-resmode-":
             weeklist["Currentweek"].factionlist[values["-factionname-"]].changeresmode()
         elif event=="-addmooks-":
-            mookvalues=mookwindow(weeklist["Currentweek"].factionlist[values["-factionname-"]], "Add")
+            mookvalues=mookwindow(faction, "Add")
             if mookvalues!= None:
                 for element in mookvalues:
                     weeklist["Currentweek"].factionlist[values["-factionname-"]].addspecificmooks(element,mookvalues[element])
         elif event=="-rmvmooks-":
-            mookvalues=mookwindow(weeklist["Currentweek"].factionlist[values["-factionname-"]], "Remove")
+            mookvalues=mookwindow(faction, "Remove")
             if mookvalues!= None:
                 for element in mookvalues:
                     weeklist["Currentweek"].factionlist[values["-factionname-"]].rmvspecificmooks(element,mookvalues[element])
         elif event=="-setmooks-":
-            mookvalues=mookwindow(weeklist["Currentweek"].factionlist[values["-factionname-"]], "Set")
+            mookvalues=mookwindow(faction, "Set")
             if mookvalues!= None:
                 for element in mookvalues:
                     weeklist["Currentweek"].factionlist[values["-factionname-"]].setmooks(element,mookvalues[element])
         elif event=="-setprod-":
-            prodvalues=setprod(weeklist["Currentweek"].factionlist[values["-factionname-"]])
+            prodvalues=setprod(faction)
             if prodvalues != None:
                 weeklist["Currentweek"].factionlist[values["-factionname-"]].acbnumber=prodvalues["acbnum"]
                 weeklist["Currentweek"].factionlist[values["-factionname-"]].baseprod.prodmultiplier=prodvalues["prodmult"]
         elif event=="-tweakacb-":
-            tweakvalues=acbtweak(weeklist["Currentweek"].factionlist[values["-factionname-"]])
+            tweakvalues=acbtweak(faction)
             if tweakvalues != None:
                 weeklist["Currentweek"].factionlist[values["-factionname-"]].baseprod.production=tweakvalues
+        
+        elif event=="-addprodtype-":
+            print("Adding type")
+            prodtype=addprodtype(faction)
+            print("Window closed")
+            print(prodtype)
+            if prodtype != None:
+                weeklist["Currentweek"].factionlist[values["-factionname-"]].baseprod.addprodtype(prodtype)
+                print("Added type")
             
-            
+        elif event=="-rmvprodtype-":
+            prodtype=rmvprodtype(faction)
+            if prodtype != None:
+                weeklist["Currentweek"].factionlist[values["-factionname-"]].baseprod.removetype(prodtype)
+                
+        elif event=="-customprodtype-":
+            prodtype=customprodtype(faction)
+            if prodtype != None:
+                weeklist["Currentweek"].factionlist[values["-factionname-"]].baseprod.addmagtype(prodtype["class"],prodtype["magsize"])    
+
+        elif event=="-remgprodtype-":
+            sg.Popup("Warning: Removing a Ship Class from Global production will delete it from all factions that are currently producing it.")
+            prodtype=rmvcustomprodtype(faction)
+            print(prodtype)
+            if prodtype != None:
+                weeklist["Currentweek"].factionlist[values["-factionname-"]].baseprod.remmagtype(prodtype)                
+                
+                
         elif event=="-addbote-":
             newbote=addbotewindow()
             if newbote!= None:
@@ -438,12 +558,13 @@ while True:
                 weeklist["Currentweek"].factionlist[values["-factionname-"]].rmvmember(bote)#removes the shipgirl from her current faction
                 transffaction=transfdata["faction"]
                 weeklist["Currentweek"].factionlist[transffaction].addmember(bote)#adds her to the new faction
+
                 
                 
         else:
             print("Error")
             
-
+        print('No error on event handling, error is un UI update')
         
     #updates the UI after changes are made
         if values["-factionname-"] in weeklist["Currentweek"].factionlist:
@@ -457,12 +578,19 @@ while True:
             window.Element("-botecount-").Update(value=numbotes)
             #Shipgirl list update complete
             #Beginning of Mook numbers updating
+            print("1")
             magnumbers=weeklist["Currentweek"].factionlist[values["-factionname-"]].mooknum2mag()
+            print("2")
             window.Element("-mookmagnum-").Update(value=magnumbers)
+            print("3")
             rawnumbers=weeklist["Currentweek"].factionlist[values["-factionname-"]].getmooknums()
+            
             window.Element("-mookrawnum-").Update(value=rawnumbers)
+            print("4")
+
             #End of mook number update
             #Start of Production update
+            print("Production started")
             prodmagnumbers=weeklist["Currentweek"].factionlist[values["-factionname-"]].getprodmags()
             window.Element("-prodmags-").Update(value=prodmagnumbers)
             prodrawnumbers=weeklist["Currentweek"].factionlist[values["-factionname-"]].getprodraw()
@@ -470,6 +598,7 @@ while True:
             window.Element("-acbnums-").Update(value=weeklist["Currentweek"].factionlist[values["-factionname-"]].acbnumber)
             baseprod=weeklist["Currentweek"].factionlist[values["-factionname-"]].baseprod.getbaseprod()
             window.Element("-acbprod-").Update(value=baseprod)
+            print("Production updated")
             #End production updates
             #start resource updates
             income=weeklist["Currentweek"].factionlist[values["-factionname-"]].getincome()
@@ -494,12 +623,14 @@ while True:
             window.Element("-botecount-").Update(value=numbotes)
             #Shipgirl list update complete
             #Beginning of Mook numbers updating
+            print("Mooknums")
             magnumbers=weeklist["Currentweek"].factionlist[list(weeklist["Currentweek"].factionlist.keys())[0]].mooknum2mag()
             window.Element("-mookmagnum-").Update(value=magnumbers)
             rawnumbers=weeklist["Currentweek"].factionlist[list(weeklist["Currentweek"].factionlist.keys())[0]].getmooknums()
             window.Element("-mookrawnum-").Update(value=rawnumbers)
             #End of mook number update
             #Start of Production update
+            print("Production started")
             prodmagnumbers=weeklist["Currentweek"].factionlist[list(weeklist["Currentweek"].factionlist.keys())[0]].getprodmags()
             window.Element("-prodmags-").Update(value=prodmagnumbers)
             prodrawnumbers=weeklist["Currentweek"].factionlist[list(weeklist["Currentweek"].factionlist.keys())[0]].getprodraw()
@@ -507,6 +638,7 @@ while True:
             window.Element("-acbnums-").Update(value=weeklist["Currentweek"].factionlist[list(weeklist["Currentweek"].factionlist.keys())[0]].acbnumber)
             baseprod=weeklist["Currentweek"].factionlist[list(weeklist["Currentweek"].factionlist.keys())[0]].baseprod.getbaseprod()
             window.Element("-acbprod-").Update(value=baseprod)
+            print("Production done")
             #End production updates
             #start resource updates
             income=weeklist["Currentweek"].factionlist[list(weeklist["Currentweek"].factionlist.keys())[0]].getincome()
@@ -521,10 +653,9 @@ while True:
             window.Element("-slavepopmags-").Update(value=slavemags)
             
     except:
-        sg.Popup("There was a UI Error")
+        print("There was a UI Error")
+        if event == sg.WIN_CLOSED or event == None:
+            break
         
-                
-        
-
 
 window.close()
